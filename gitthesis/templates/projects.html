@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+  <h2>Projects</h2>
+
+  {{ title }} <br>
+  {{ tai }}
+
+  <br>
+
+  {% for isi in tai %}
+    <li>{{ isi }}</li>
+  {% endfor %}
+
+  <script src="" async defer></script>
+  
+{% endblock %}
+  
