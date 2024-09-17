@@ -96,3 +96,40 @@
     background-clip: text;
     color: transparent;
 }
+
+
+/* HOME */
+        aside {
+            /* border: 1px yellow solid; */
+            position: fixed;
+            overflow: auto;
+            height: calc(100vh - 68px);
+            justify-content: flex-start;
+            align-self: flex-start;
+            background-color: #fff;
+    
+        }
+    
+        #sidebarshow {
+            display: none;
+    
+        }
+    
+        @media screen and (max-width: 575px) {
+            #sidebarshow {
+                display: inline;
+            }
+    
+            #sidebartoggle {
+                display: none;
+            }
+        }
+
+.gradient-text-sidebar {
+    background: linear-gradient(to right, #1230AE, #6C48C5, #C68FE6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+

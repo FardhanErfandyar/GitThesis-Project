@@ -1,10 +1,64 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
-  <h1>HOME </h1>
 
-  <script src="" async defer></script>
-  
+{% load static %}
+<aside id="sidebarMenu" class="col-md-3 col-lg-3 d-md-block sidebar collapse show md-4 navbar-shadow" style="margin-top: 5rem;">
+  <div class="position-sticky pt-3">
+    <ul class="nav flex-column">
+      <!-- Project Name Section -->
+      <!-- Project Name Section -->
+      <li class="nav-item">
+        <span class="nav-link gradient-text-sidebar fw-bold">Top Projects</span>
+
+        <!-- Search Form -->
+        <div class="px-3 mb-3 md-4 w-75"> <!-- Add padding and margin -->
+          <form class="d-flex" role="search">
+            <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+          </form>
+        </div>
+      </li>
+
+      {% comment %} {% for project in projects %} {% endcomment %}
+      <li class="nav-item">
+        <a class="nav-link text-dark fw-medium" href="#">
+          FardhanErfandyar/Clustering
+          {% comment %} {{ project }} {% endcomment %}
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark fw-medium" href="#">
+          FardhanErfandyar/KNNCluster
+          {% comment %} {{ project }} {% endcomment %}
+        </a>
+      </li>
+      {% comment %} {% endfor %} {% endcomment %}
+      
+      <li class="border-top my-3" style="border-width: 5px;"></li> <!-- Divider -->
+
+      <!-- Contacts Section -->
+      <li class="nav-item md">
+        <span class="nav-link gradient-text-sidebar  fw-bold">Networks</span>
+      </li>
+      {% comment %} {% for network in networks %} {% endcomment %}
+      <li class="nav-item">
+        <a class="nav-link text-dark fw-medium d-flex align-items-center" href="#">
+          <img class="me-2" src="{% static 'images/profile-new.svg' %}" width="30" height="30" alt="Profile">
+          <span>Hiekam Nursal</span>
+        </a>
+
+        {% comment %} {{ network }} {% endcomment %}
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark fw-medium d-flex align-items-center" href="#">
+          <img class="me-2" src="{% static 'images/profile-new.svg' %}" width="30" height="30" alt="Profile">
+          <span>Wildan Arga</span>
+        </a>
+      </li>
+      {% comment %} {% endfor %} {% endcomment %}
+      
+    </ul>
+  </div>
+</aside>
+
 {% endblock %}
-  
