@@ -18,6 +18,10 @@
     padding-bottom: 2px;
 }
 
+.navbar-shadow {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .nav-link-hover:hover {
     border-bottom: 1px solid #6C48C5;
     padding-bottom: 2px;
@@ -33,7 +37,7 @@
 }
 
 .home-link {
-    margin-left: 85px;
+    margin-left: 65px;
 }
 
 /* LANDING PAGE */
@@ -41,7 +45,7 @@
     background-color: rgb(113, 124, 113);
     height: 80vh;
     width: 100% ;
-    padding: 10px 20px;
+    padding: 35px 20px;
 }
 
 .gradient-text {
