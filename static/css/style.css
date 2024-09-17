@@ -1,10 +1,53 @@
-.thesis-font-logo{
-    color: orange;
-}
 
 *{
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
     font-family: 'Poppins';
 }
 
+
+/* NAVBAR */
+.thesis-font-logo{
+    color: #6C48C5;
+}
+
+.active {
+    color: #6C48C5 !important;
+    border-bottom: 1px solid #6C48C5;
+    padding-bottom: 2px;
+}
+
+.nav-link-hover:hover {
+    border-bottom: 1px solid #6C48C5;
+    padding-bottom: 2px;
+}
+
+.btn-primary{
+    background-color: #6C48C5;
+    border-color: #6C48C5;
+}
+
+.btn-outline-primary{
+    border-color: #6C48C5;
+}
+
+.home-link {
+    margin-left: 85px;
+}
+
+/* LANDING PAGE */
+.header{
+    background-color: rgb(113, 124, 113);
+    height: 80vh;
+    width: 100% ;
+    padding: 10px 20px;
+}
+
+.gradient-text {
+    background: linear-gradient(to left, #1230AE, #6C48C5, #C68FE6, #FFF7F7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}

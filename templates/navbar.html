@@ -1,5 +1,5 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg navbar-transparent py-3">
     <div class="container-fluid">
 
         <!-- Offcanvas toggle button -->
@@ -8,11 +8,7 @@
         </button>
 
         <!-- Logo and Brand Name -->
-        <a href="#" class="navbar-brand fw-bolder mx-auto ms-5 mb-0 h1">
-            <img 
-            class="d-inline-block align-top" 
-            src="{% static 'images/logothesis.svg' %}" 
-            width="23" height="23"> 
+        <a href="" class="navbar-brand fw-bolder mx-auto ms-5 mb-0 h1">
             Git<span class="thesis-font-logo">Thesis</span>
         </a>
 
@@ -24,20 +20,29 @@
             </div>
             <div class="offcanvas-body">
                 <!-- Navigation Links di Sidebar -->
-                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                <ul class="navbar-nav ms-10 justify-content-center flex-grow-1 pe-3">
                     <li class="nav-item">
-                        <a class="nav-link fw-semibold {% if request.path == '/' %}active{% endif %}" aria-current="page" href="/">Home</a>
+                        <a class="nav-link nav-link-hover fw-semibold home-link {% if request.path == '/'  %}active{% endif %}" aria-current="page" href="/">Home</a>
+                    </li>
+                    {% comment %} <li class="nav-item">
+                        <a class="nav-link nav-link-hover fw-semibold {% if request.path == '/home/'  %}active{% endif %}" aria-current="page" href="/home">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-semibold {% if request.path == '/projects/' %}active{% endif %}" href="/projects">Projects</a>
-                    </li>
+                        <a class="nav-link nav-link-hover fw-semibold {% if request.path == '/projects/' %}active{% endif %}" href="/projects">Projects</a>
+                    </li> {% endcomment %}
                 </ul>
             </div>
         </div>
 
         <!-- Search Form and Profile Dropdown -->
         <div class="d-flex align-items-center ms-auto me-5">
-            <!-- Search Form -->
+
+            <!--Login sign up button-->
+            <a href="#" class="btn btn-outline-primary me-2">Sign in</a>
+            <a href="#" class="btn btn-primary">Sign up</a>
+
+
+            {% comment %} <!-- Search Form -->
             <form class="d-flex me-3" role="search">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
             </form>
@@ -54,7 +59,8 @@
                     <li><a class="dropdown-item" href="#">Profile</a></li>
                     <li><a class="dropdown-item" href="#">Sign Out</a></li>
                 </ul>
-            </div>
+            </div> {% endcomment %}
+
         </div>
 
     </div>
