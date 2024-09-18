@@ -10,4 +10,5 @@ urlpatterns = [
     path("", landing),
     path("project/", project),
     path("home/", home),
+    path("myprojects/", myprojects)
 ]
