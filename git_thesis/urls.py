@@ -8,7 +8,7 @@ from django.contrib.auth.views import LoginView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", landing),
-    path("projects/", projects),
+    path("project/", project),
     path("home/", home),
     path("myprojects/", myprojects)
 ]
