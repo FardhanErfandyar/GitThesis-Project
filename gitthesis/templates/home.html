@@ -3,62 +3,144 @@
 {% block content %}
 
 {% load static %}
-<aside id="sidebarMenu" class="col-md-3 col-lg-3 d-md-block sidebar collapse show md-4 navbar-shadow" style="margin-top: 5rem;">
-  <div class="position-sticky pt-3">
-    <ul class="nav flex-column">
-      <!-- Project Name Section -->
-      <!-- Project Name Section -->
-      <li class="nav-item">
-        <span class="nav-link gradient-text-sidebar fw-bold">Top Projects</span>
 
-        <!-- Search Form -->
-        <div class="px-3 mb-3 md-4 w-75"> <!-- Add padding and margin -->
-          <form class="d-flex" role="search">
-            <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-          </form>
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar Kiri (Top Projects) -->
+    <div class="col-md-3 col-lg-3">
+      <aside class="sidebar navbar-shadow" style="margin-top: 5rem; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <!-- Project Name Section -->
+            <li class="nav-item">
+              <span class="nav-link gradient-text-sidebar fw-bold">Top Projects</span>
+
+              <!-- Search Form -->
+              <div class="px-3 mb-3 w-75">
+                <form class="d-flex" role="search">
+                  <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+                </form>
+              </div>
+            </li>
+
+            <!-- Example Projects -->
+            <li class="nav-item">
+              <a class="nav-link text-dark fw-medium" href="#">FardhanErfandyar/Clustering</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark fw-medium" href="#">FardhanErfandyar/KNNCluster</a>
+            </li>
+
+            <li class="border-top my-3" style="border-width: 5px;"></li> <!-- Divider -->
+          </ul>
         </div>
-      </li>
+      </aside>
+    </div>
 
-      {% comment %} {% for project in projects %} {% endcomment %}
-      <li class="nav-item">
-        <a class="nav-link text-dark fw-medium" href="#">
-          FardhanErfandyar/Clustering
-          {% comment %} {{ project }} {% endcomment %}
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-dark fw-medium" href="#">
-          FardhanErfandyar/KNNCluster
-          {% comment %} {{ project }} {% endcomment %}
-        </a>
-      </li>
-      {% comment %} {% endfor %} {% endcomment %}
-      
-      <li class="border-top my-3" style="border-width: 5px;"></li> <!-- Divider -->
+    <!-- Kolom Tengah (Card Riwayat) -->
+    <div class="col-md-6 col-lg-6" style="margin-top: 5rem; padding-left: 0.2rem; padding-right: 2rem;"> <!-- Tambahkan padding kiri dan kanan -->
 
-      <!-- Contacts Section -->
-      <li class="nav-item md">
-        <span class="nav-link gradient-text-sidebar  fw-bold">Networks</span>
-      </li>
-      {% comment %} {% for network in networks %} {% endcomment %}
-      <li class="nav-item">
-        <a class="nav-link text-dark fw-medium d-flex align-items-center" href="#">
-          <img class="me-2" src="{% static 'images/profile-new.svg' %}" width="30" height="30" alt="Profile">
-          <span>Hiekam Nursal</span>
-        </a>
+      <!-- Card Riwayat -->
+      <div class="card mb-3" style="max-width: 100%;">
+        <div class="row g-0">
+          <div class="col-md-2 d-flex align-items-center justify-content-center">
+            <img src="{% static 'images/profile-new.svg' %}" class="img-fluid rounded-start" alt="Profile Icon" style="width: 60px; height: 60px;">
+          </div>
+          <div class="col-md-10">
+            <div class="card-body">
+              <h5 class="card-title">Hiekam Nursal</h5>
+              <p class="card-text">baru saja melakukan perubahan pada project "Clustering".</p>
+              <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        {% comment %} {{ network }} {% endcomment %}
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-dark fw-medium d-flex align-items-center" href="#">
-          <img class="me-2" src="{% static 'images/profile-new.svg' %}" width="30" height="30" alt="Profile">
-          <span>Wildan Arga</span>
-        </a>
-      </li>
-      {% comment %} {% endfor %} {% endcomment %}
-      
-    </ul>
+      <!-- Card Wildan Arga -->
+      <div class="card mb-3" style="max-width: 100%;">
+        <div class="row g-0">
+          <div class="col-md-2 d-flex align-items-center justify-content-center">
+            <img src="{% static 'images/profile-new.svg' %}" class="img-fluid rounded-start" alt="Profile Icon" style="width: 60px; height: 60px;">
+          </div>
+          <div class="col-md-10">
+            <div class="card-body">
+              <h5 class="card-title">Wildan Arga</h5>
+              <p class="card-text">melakukan perubahan pada project "KNNCluster".</p>
+              <p class="card-text"><small class="text-body-secondary">Last updated 5 mins ago</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Fardhan Erfandyar -->
+      <div class="card mb-3" style="max-width: 100%;">
+        <div class="row g-0">
+          <div class="col-md-2 d-flex align-items-center justify-content-center">
+            <img src="{% static 'images/profile-new.svg' %}" class="img-fluid rounded-start" alt="Profile Icon" style="width: 60px; height: 60px;">
+          </div>
+          <div class="col-md-10">
+            <div class="card-body">
+              <h5 class="card-title">Fardhan Erfandyar</h5>
+              <p class="card-text">memberikan komentar pada project "Clustering".</p>
+              <p class="card-text"><small class="text-body-secondary">Last updated 5 mins ago</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Tata -->
+      <div class="card mb-3" style="max-width: 100%;">
+        <div class="row g-0">
+          <div class="col-md-2 d-flex align-items-center justify-content-center">
+            <img src="{% static 'images/profile-new.svg' %}" class="img-fluid rounded-start" alt="Profile Icon" style="width: 60px; height: 60px;">
+          </div>
+          <div class="col-md-10">
+            <div class="card-body">
+              <h5 class="card-title">Tata</h5>
+              <p class="card-text">memberikan komentar pada project "KNNCluster".</p>
+              <p class="card-text"><small class="text-body-secondary">Last updated 5 mins ago</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar Kanan (Networks) -->
+    <div class="col-md-3 col-lg-3">
+      <aside class="sidebar navbar-shadow position-fixed" style="top: 5rem; right: 0.5rem; width: 25%; height: 100vh; border-right: 2px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <!-- Networks Section -->
+            <li class="nav-item">
+              <span class="nav-link gradient-text-sidebar fw-bold">Networks</span>
+            </li>
+
+            <!-- Example Networks -->
+            <li class="nav-item">
+              <a class="nav-link text-dark fw-medium d-flex align-items-center" href="#">
+                <img class="me-2" src="{% static 'images/profile-new.svg' %}" width="30" height="30" alt="Profile">
+                <span>Hiekam Nursal</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark fw-medium d-flex align-items-center" href="#">
+                <img class="me-2" src="{% static 'images/profile-new.svg' %}" width="30" height="30" alt="Profile">
+                <span>Wildan Arga</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
   </div>
-</aside>
+</div>
+
+<!-- Bootstrap JS (Optional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
 
 {% endblock %}
