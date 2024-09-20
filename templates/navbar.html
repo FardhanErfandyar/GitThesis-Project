@@ -24,16 +24,18 @@
             </div>
             <div class="offcanvas-body">
                 <!-- Navigation Links di Sidebar -->
-                <ul class="navbar-nav ms-10 justify-content-center flex-grow-1 pe-3">
+                {% comment %} <ul class="navbar-nav ms-10 justify-content-center flex-grow-1 pe-3">
                     <li class="nav-item">
                         <a class="nav-link nav-link-hover fw-semibold home-link {% if request.path == '/'  %}active{% endif %}" aria-current="page" href="/">Home</a>
                     </li>
-                    {% comment %} <li class="nav-item">
+                </ul> {% endcomment %}
+                <ul class="navbar-nav ms-10 justify-content-end flex-grow-1 pe-3">
+                    <li class="nav-item">
                         <a class="nav-link nav-link-hover fw-semibold {% if request.path == '/home/'  %}active{% endif %}" aria-current="page" href="/home">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link nav-link-hover fw-semibold {% if request.path == '/projects/' %}active{% endif %}" href="/projects">Projects</a>
-                    </li> {% endcomment %}
+                    </li>
                 </ul>
             </div>
         </div>
@@ -42,11 +44,11 @@
         <div class="d-flex align-items-center ms-auto me-5">
 
             <!--Login sign up button-->
-            <button class="btn btn-outline-primary me-2" data-bs-target="#SignIn" data-bs-toggle="modal">Sign in</button>
-            <button class="btn btn-primary" data-bs-target="#SignUp" data-bs-toggle="modal">Sign Up</button>
+            {% comment %} <button class="btn btn-outline-primary me-2" data-bs-target="#SignIn" data-bs-toggle="modal">Sign in</button>
+            <button class="btn btn-primary" data-bs-target="#SignUp" data-bs-toggle="modal">Sign Up</button> {% endcomment %}
 
             <!-- Profile Dropdown -->
-            {% comment %} <div class="nav-item dropdown">
+            <div class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img 
                     class="d-inline-block align-top" 
@@ -57,7 +59,7 @@
                     <li><a class="dropdown-item" href="#">Profile</a></li>
                     <li><a class="dropdown-item" href="#">Sign Out</a></li>
                 </ul>
-            </div>  {% endcomment %}
+            </div> 
 
         </div>
 

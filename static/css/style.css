@@ -218,3 +218,16 @@ aside {
     background-clip: text;
     color: transparent;
 }
+
+/* MYPROJECT */
+ .project-item {
+     border-radius: 15px !important;
+     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+     padding: 15px;
+     transition: transform 0.3s ease, box-shadow 0.3s ease;
+ }
+
+ .project-item:hover {
+     transform: scale(1.02);
+     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+ }
