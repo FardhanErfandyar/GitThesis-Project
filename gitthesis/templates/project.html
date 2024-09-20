@@ -1,16 +1,56 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
-  <h2>Projects</h2>
 
-  <br>
+{% load static %}
 
-  {% for isi in tai %}
-    <li>{{ isi }}</li>
-  {% endfor %}
+    <div class="container-fluid container-project">
+        <div class="row no-gutters">
+            <!-- Sidebar kiri untuk struktur penulisan -->
+            <div class="col-md-2 sidebar-left">
+                <h5 class="gradient-text-sidebar fw-semibold">Struktur Dokumen</h5>
+                <ul class="list-unstyled">
+                    <li>Judul</li>
+                    <li>Bab 1: Pendahuluan</li>
+                    <li>Bab 2: Pembahasan</li>
+                    <li>Bab 3: Kesimpulan</li>
+                </ul>
+            </div>
 
-  <script src="" async defer></script>
-  
+            <!-- Area penulisan dokumen di tengah -->
+            <div class="col-md-8">
+                <div class="document">
+                    <textarea class="editor-content" placeholder="Mulai menulis..."></textarea>
+                    
+                    <!-- Tombol "Send" -->
+                    <div class="send-btn-container">
+                        <button class="btn-send">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar kanan untuk komentar dan history -->
+            <div class="col-md-2 sidebar-right">
+                <div class="comments">
+                    <h6>Komentar</h6>
+                    <p><strong>User 1:</strong> Coba tambahkan lebih banyak contoh di Bab 2.</p>
+                    <p><strong>User 2:</strong> Perbaiki grammar di paragraf 3.</p>
+                </div>
+
+                <div class="history">
+                    <h6>Riwayat Perubahan</h6>
+                    <ul class="list-unstyled">
+                        <li>1 jam yang lalu - User 1 mengedit Bab 1.</li>
+                        <li>2 jam yang lalu - User 2 mengomentari paragraf 3.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 {% endblock %}
-  
