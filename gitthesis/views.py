@@ -20,5 +20,10 @@ def home(request):
 def landing(request):
     return render(request, "landing.html")
 
+
 def myprojects(request):
     return render(request, "myprojects.html")
+
+
+def project(request):
+    return render(request, "project.html")
