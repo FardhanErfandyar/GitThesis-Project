@@ -1,11 +1,125 @@
-
-*{
+/* Menggunakan gaya global dari CSS tambahan */
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins';
+    font-family: 'Poppins', sans-serif;
 }
 
+
+/* PROJECT */
+
+.container-project{
+    margin-top: 5.5rem;
+    /* background: linear-gradient(to left, #1230AE, #6C48C5, #C68FE6); */
+}
+.document {
+    background-color: white;
+    width: 100%;
+    min-height: 90vh;
+    padding: 40px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+/* Area penulisan */
+.editor-content {
+    width: 100%;
+    border: none;
+    outline: none;
+    line-height: 1.5;
+    color: #202124;
+    resize: none;
+    min-height: 90vh;
+}
+
+/* Sidebar kiri */
+.sidebar-left {
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    min-height: 90vh;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Sidebar kanan untuk komentar dan history */
+.sidebar-right {
+    background-color: #fff;
+    min-height: 90vh;
+    padding: 20px;
+    overflow-y: auto;
+    border-left: 1px solid #ddd;
+}
+
+.comments, .history {
+    background-color: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.comments h6, .history h6 {
+    color: #6C48C5;
+}
+
+/* Styling struktur sidebar kiri */
+.gradient-text-sidebar {
+    background: linear-gradient(to right, #1230AE, #6C48C5, #C68FE6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Menghapus scrollbar dari textarea */
+.editor-content::-webkit-scrollbar {
+    display: none;
+}
+
+/* Penyesuaian layout sidebar */
+aside {
+    position: fixed;
+    overflow: auto;
+    height: calc(100vh - 68px);
+    justify-content: flex-start;
+    align-self: flex-start;
+    background-color: #fff;
+}
+
+#sidebarshow {
+    display: none;
+}
+
+@media screen and (max-width: 575px) {
+    #sidebarshow {
+        display: inline;
+    }
+
+    #sidebartoggle {
+        display: none;
+    }
+}
+
+/* Styling tombol "Send" */
+.send-btn-container {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.btn-send {
+    background-color: #6C48C5;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-send:hover {
+    background-color: #5b3fb8;
+}
 
 /* NAVBAR */
 .thesis-font-logo{
@@ -80,7 +194,6 @@
     color: #ddd;
 }
 
-
 /* LANDING PAGE */
 .header{
     background-color: rgb(113, 124, 113);
@@ -97,34 +210,7 @@
     color: transparent;
 }
 
-
 /* HOME */
-        aside {
-            /* border: 1px yellow solid; */
-            position: fixed;
-            overflow: auto;
-            height: calc(100vh - 68px);
-            justify-content: flex-start;
-            align-self: flex-start;
-            background-color: #fff;
-    
-        }
-    
-        #sidebarshow {
-            display: none;
-    
-        }
-    
-        @media screen and (max-width: 575px) {
-            #sidebarshow {
-                display: inline;
-            }
-    
-            #sidebartoggle {
-                display: none;
-            }
-        }
-
 .gradient-text-sidebar {
     background: linear-gradient(to right, #1230AE, #6C48C5, #C68FE6);
     -webkit-background-clip: text;
@@ -133,3 +219,15 @@
     color: transparent;
 }
 
+/* MYPROJECT */
+ .project-item {
+     border-radius: 15px !important;
+     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+     padding: 15px;
+     transition: transform 0.3s ease, box-shadow 0.3s ease;
+ }
+
+ .project-item:hover {
+     transform: scale(1.02);
+     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+ }
