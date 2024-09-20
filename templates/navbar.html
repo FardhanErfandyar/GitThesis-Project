@@ -34,7 +34,7 @@
                         <a class="nav-link nav-link-hover fw-semibold {% if request.path == '/home/'  %}active{% endif %}" aria-current="page" href="/home">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hover fw-semibold {% if request.path == '/projects/' %}active{% endif %}" href="/projects">Projects</a>
+                        <a class="nav-link nav-link-hover fw-semibold {% if '/myprojects' in request.path %}active{% endif %}" href="/myprojects">My Projects</a>
                     </li>
                 </ul>
             </div>
