@@ -17,15 +17,38 @@
                 </ul>
             </div>
 
-            <!-- Area penulisan dokumen di tengah -->
+            <!-- Overview dokumen di tengah -->
             <div class="col-md-8">
                 <div class="document">
-                    <textarea class="editor-content" placeholder="Mulai menulis..."></textarea>
+                    <h4 class="text-center mb-4 gradient-text fw-semibold">Nama Project</h4>
                     
-                    <!-- Tombol "Send" -->
-                    <div class="send-btn-container">
-                        <button class="btn-send">Send</button>
+                    <!-- LaTeX Editor -->
+                    <!-- latextemplate.html -->
+                    <div class="latex-editor d-flex">
+                        <div class="line-numbers" id="lineNumbers"></div>
+                        <div class="flex-grow-1">
+                            {% include 'latextemplate.html' %}
+                        </div>
                     </div>
+
+
+                    <!-- Form untuk tombol "Edit with LaTeX" -->
+                    <form id="overleafForm" action="https://www.overleaf.com/docs" method="post" target="_blank">
+                        <input type="hidden" id="snip_uri" name="snip_uri" value="">
+                        <input type="submit" class="btn btn-primary btn-sm" value="Open in Overleaf">
+                    </form>
+                    
+                    <!-- Tombol "Preview" -->
+                    <div class="d-flex justify-content-end">
+                        <button id="previewLatex" class="btn btn-primary mt-3">Preview LaTeX</button>
+                    </div>
+
+                    <!-- Hasil Preview -->
+                    <div class="latex-output mt-3 d-flex justify-content-center">
+                        <h5 class="gradient-text-sidebar">Preview</h5><br>
+                        <div id="latexPreview"></div>
+                    </div>
+                    
                 </div>
             </div>
 
@@ -52,5 +75,12 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Integrasi MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    {% comment %} Script statis {% endcomment %}
+    <script src="{% static 'js/project.js' %}"></script>
 
 {% endblock %}
