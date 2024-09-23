@@ -11,27 +11,40 @@
                 <h5 class="gradient-text-sidebar fw-semibold">Struktur Dokumen</h5>
                 <ul class="list-unstyled">
                     
-                    <li class="nav-item pt-1 pb-1">
-                        <a class="nav-link text-dark fw-medium" href="#">Cover</a>
-                    </li>
-                    <li class="nav-item pt-1 pb-1">
-                        <a class="nav-link text-dark fw-medium" href="#">Kata Pengantar</a>
-                    </li>
-                    <li class="nav-item pt-2 pb-2">
-                        <a class="nav-link text-dark fw-medium" href="#">Bab 1: Pendahuluan</a>
-                    </li>
-                    <li class="nav-item pt-2 pb-2">
-                        <a class="nav-link text-dark fw-medium" href="#">Bab 2: Tinjauan Pustaka</a>
-                    </li>
-                    <li class="nav-item pt-2 pb-2">
-                        <a class="nav-link text-dark fw-medium" href="#">Bab 3: Metodologi</a>
-                    </li>
-                    <li class="nav-item pt-2 pb-2">
-                        <a class="nav-link text-dark fw-medium" href="#">Bab 4: Pembahasan</a>
-                    </li>
-                    <li class="nav-item pt-2 pb-2">
-                        <a class="nav-link text-dark fw-medium" href="#">Kesimpulan dan Saran</a>
-                    </li>
+                    <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
+                    href="#" style="white-space: nowrap; width: 220px;">
+                    Cover
+                 </a>
+                 
+                 <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
+                    href="#" style="white-space: nowrap; width: 220px;">
+                    Kata Pengantar
+                 </a>
+                 
+                 <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
+                    href="#" style="white-space: nowrap; width: 220px;">
+                    Bab 1: Pendahuluan
+                 </a>
+                 
+                 <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium justify-content-center" 
+                    href="#" style="white-space: nowrap; width: 22  0px;">
+                    Bab 2: Tinjauan Pustaka
+                 </a>
+                 
+                 <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
+                    href="/project" style="white-space: nowrap; width: 220px;">
+                    Bab 3: Metodologi
+                 </a>
+                 
+                 <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
+                    href="#" style="white-space: nowrap; width: 220px;">
+                    Bab 4: Pembahasan
+                 </a>
+                 
+                 <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
+                    href="#" style="white-space: nowrap; width: 220px;">
+                    Kesimpulan dan Saran
+                 </a>
                     
                 </ul>
             </div>
@@ -45,10 +58,17 @@
                     <!-- latextemplate.html -->
                     <div class="latex-editor d-flex">
                         <div class="line-numbers" id="lineNumbers"></div>
-                        <div class="flex-grow-1">
+                        <div class="flex-grow-1 section">
                             {% include 'latextemplate.html' %}
                         </div>
+                        {% comment %} <div class="flex-grow-1 section">
+                            {% include 'latextemplate.html' %}
+                        </div>
+                        <div class="flex-grow-1 section">
+                            {% include 'latextemplate.html' %}
+                        </div> {% endcomment %}
                     </div>
+
 
 
                     <!-- Form untuk tombol "Edit with LaTeX" -->
