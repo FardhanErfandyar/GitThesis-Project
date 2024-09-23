@@ -9,6 +9,11 @@ function updateLineNumbers() {
     for (let i = 1; i <= lines; i++) {
         lineNumbers.innerHTML += i + "<br>";
     }
+
+    // Perbarui tinggi textarea dan line numbers agar sesuai dengan konten
+    textarea.style.height = 'auto';  // Set auto height to reset
+    textarea.style.height = textarea.scrollHeight + 'px';  // Set height based on scrollHeight
+    lineNumbers.style.height = textarea.scrollHeight + 'px';  // Sync height with content
 }
 
 // Panggil fungsi saat halaman dimuat untuk inisialisasi
@@ -16,17 +21,19 @@ updateLineNumbers();
 
     // Sinkronkan scroll antara line-numbers dan editor-content
     const editorContent = document.querySelector('.editor-content');
-    const lineNumbers = document.querySelector('.line-numbers');
+    const lineNumbers = document.querySelector('.lineNumbers');
 
     editorContent.addEventListener('scroll', function() {
         lineNumbers.scrollTop = editorContent.scrollTop;
     });
 
 
+ // Update line numbers setiap kali pengguna mengetik di textarea
+ editorContent.addEventListener('input', updateLineNumbers);
 
 
 // Fungsi untuk menampilkan LaTeX di dalam halaman
-        document.getElementById("previewLatex").onclick = function() {
+            document.getElementById("previewLatex").onclick = function() {
             // Ambil konten LaTeX dari textarea
             let latexCode = document.querySelector(".editor-content").value;
             
@@ -35,6 +42,7 @@ updateLineNumbers();
             
             // Render ulang LaTeX menggunakan MathJax
             MathJax.typeset();
+            
         };
 
         // Fungsi untuk mengirim LaTeX ke Overleaf saat tombol "Edit with LaTeX" diklik
