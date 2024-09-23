@@ -255,3 +255,42 @@ aside {
      transform: scale(1.02);
      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
  }
+
+/* PROJECT LINE NUMBER */
+.latex-editor {
+    display: flex;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    height: 700px; /* Batas tinggi untuk membuat scroll */
+    overflow-y: scroll;
+    position: relative;
+}
+
+.line-numbers {
+    background-color: #f7f7f7;
+    padding: 10px;
+    border-right: 1px solid #ddd;
+    user-select: none;
+    text-align: right;
+    white-space: nowrap;
+    position: sticky; /* Gunakan sticky agar tetap di tempat saat di-scroll */
+    top: 0; /* Tetap di atas */
+    width: 50px; /* Lebar tetap */
+    height: 100%;
+    overflow: hidden;
+}
+
+.editor-content {
+    font-family: monospace;
+    line-height: 1.5;
+    padding: 10px;
+    padding-left: 10px; /* Sesuaikan padding kiri */
+    border: none;
+    resize: none;
+    width: calc(100% - 50px); /* Sesuaikan lebar untuk menghindari overlap */
+    height: calc(100% - 20px); /* Sesuaikan tinggi untuk memperhitungkan padding */
+    overflow-y: auto; /* Pastikan scroll diaktifkan saat konten lebih panjang */
+    overflow-x: hidden;
+    outline: none;
+    box-sizing: border-box;
+}
