@@ -11,6 +11,7 @@
 
 .container-project{
     margin-top: 5.5rem;
+    display: flex;
     /* background: linear-gradient(to left, #1230AE, #6C48C5, #C68FE6); */
 }
 .document {
@@ -37,9 +38,12 @@
 .sidebar-left {
     background-color: #fff;
     border-right: 1px solid #ddd;
-    min-height: 90vh;
+    min-height: vh;
     padding: 20px;
     overflow-y: auto;
+    position: sticky;
+    top: 90px; /* Stick to the top */
+    height: 100vh;
 }
 
 /* Sidebar kanan untuk komentar dan history */
@@ -47,8 +51,13 @@
     background-color: #fff;
     min-height: 90vh;
     padding: 20px;
-    overflow-y: auto;
     border-left: 1px solid #ddd;
+    width: 100%;  /* Ini agar sidebar mengikuti aturan grid */
+    max-width: 250px; 
+    overflow-y: auto;
+    position: sticky;
+    top: 90px; /* Stick to the top */
+    height: 100vh;
 }
 
 .comments, .history {
@@ -266,7 +275,6 @@ aside {
     position: relative;
 }
 
-/* PROJECT LINE NUMBER */
 .line-numbers {
     background-color: #f7f7f7;
     padding: 10px;
@@ -288,7 +296,7 @@ aside {
     padding-left: 10px; /* Sesuaikan padding kiri */
     border: none;
     resize: none;
-    width: calc(100% - 50px); /* Sesuaikan lebar untuk menghindari overlap */
+    width: calc(100% - 10px); /* Sesuaikan lebar untuk menghindari overlap */
     height: calc(100% - 20px); /* Sesuaikan tinggi untuk memperhitungkan padding */
     overflow-y: auto; /* Pastikan scroll diaktifkan saat konten lebih panjang */
     overflow-x: hidden;
@@ -319,3 +327,4 @@ aside {
     text-align: right;
     white-space: nowrap;
 }
+
