@@ -266,6 +266,7 @@ aside {
     position: relative;
 }
 
+/* PROJECT LINE NUMBER */
 .line-numbers {
     background-color: #f7f7f7;
     padding: 10px;
@@ -293,4 +294,28 @@ aside {
     overflow-x: hidden;
     outline: none;
     box-sizing: border-box;
+}
+
+/* LATEX TEMPLATE */
+.latex-editor {
+    display: flex;
+    flex-direction: row; /* Force horizontal direction */
+    justify-content: space-between; /* Ensure spacing between elements */
+    align-items: flex-start; /* Align elements at the start */
+    width: 100%;
+    overflow-x: auto; /* Allow horizontal scrolling if necessary */
+}
+
+.section {
+    flex-grow: 1; /* Make sections grow equally */
+    min-width: 200px; /* Set minimum width for each section */
+    padding: 10px;
+}
+
+.line-numbers {
+    width: 50px; /* Fixed width for line numbers */
+    background-color: #f7f7f7;
+    padding: 10px;
+    text-align: right;
+    white-space: nowrap;
 }
