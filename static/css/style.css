@@ -12,7 +12,7 @@
 .container-project{
     margin-top: 5.5rem;
     display: flex;
-    /* background: linear-gradient(to left, #1230AE, #6C48C5, #C68FE6); */
+    flex-wrap: wrap;
 }
 .document {
     background-color: white;
@@ -38,26 +38,56 @@
 .sidebar-left {
     background-color: #fff;
     border-right: 1px solid #ddd;
-    min-height: vh;
+    min-height: 50vh;
     padding: 20px;
     overflow-y: auto;
     position: sticky;
     top: 90px; /* Stick to the top */
     height: 100vh;
+    min-width: 50px;
+}
+
+.sidebar-left .list-unstyled {
+    padding: 0;
+    /* Menghapus padding bawaan */
+}
+
+.sidebar-left .nav-item {
+    width: 100%;
+    /* Membuat lebar item menjadi 100% dari lebar kolom */
+    text-align: center;
+    /* Menyelaraskan teks di tengah */
+    white-space: normal;
+    /* Membiarkan teks membungkus jika perlu */
+    overflow-wrap: break-word;
+    /* Mengizinkan pembungkusan kata */
+}.sidebar-left .list-unstyled {
+    padding: 0;
+    /* Menghapus padding bawaan */
+}
+
+.sidebar-left .nav-item {
+    width: 100%;
+    /* Membuat lebar item menjadi 100% dari lebar kolom */
+    text-align: center;
+    /* Menyelaraskan teks di tengah */
+    white-space: normal;
+    /* Membiarkan teks membungkus jika perlu */
+    overflow-wrap: break-word;
+    /* Mengizinkan pembungkusan kata */
 }
 
 /* Sidebar kanan untuk komentar dan history */
 .sidebar-right {
     background-color: #fff;
-    min-height: 90vh;
+    min-height: 50vh;
     padding: 20px;
     border-left: 1px solid #ddd;
-    width: 100%;  /* Ini agar sidebar mengikuti aturan grid */
-    max-width: 250px; 
     overflow-y: auto;
-    position: sticky;
+    position: sticky;   
     top: 90px; /* Stick to the top */
     height: 100vh;
+    min-width: 50px;
 }
 
 .comments, .history {
@@ -237,15 +267,6 @@ aside {
 
 .gradient-text {
     background: linear-gradient(to left, #1230AE, #6C48C5, #C68FE6, #FFF7F7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
-}
-
-/* HOME */
-.gradient-text-sidebar {
-    background: linear-gradient(to right, #1230AE, #6C48C5, #C68FE6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
