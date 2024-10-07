@@ -1,3 +1,5 @@
+
+
 {% load static %}
 <nav class="navbar navbar-expand-lg navbar-shadow fixed-top py-3" style="background-color: #ffffff;">
     <div class="container-fluid">
@@ -22,6 +24,7 @@
                 <h5 class="offcanvas-title" id="offcanvasNavbarLabel">GitThesis</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
+            {% if user.is_authenticated %}
             <div class="offcanvas-body">
                 <!-- Navigation Links di Sidebar -->
                 {% comment %} <ul class="navbar-nav ms-10 justify-content-center flex-grow-1 pe-3">
@@ -38,28 +41,29 @@
                     </li>
                 </ul>
             </div>
+            {% endif %}
         </div>
 
         <!-- Signin Signup Button and Profile Dropdown -->
         <div class="d-flex align-items-center ms-auto me-5">
 
-            <!--Login sign up button-->
-            {% comment %} <button class="btn btn-outline-primary me-2" data-bs-target="#SignIn" data-bs-toggle="modal">Sign in</button>
-            <button class="btn btn-primary" data-bs-target="#SignUp" data-bs-toggle="modal">Sign Up</button> {% endcomment %}
-
-            <!-- Profile Dropdown -->
-            <div class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img 
-                    class="d-inline-block align-top" 
-                    src="{% static 'images/profile-new.svg' %}" 
-                    width="30" height="30">
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
-                    <li><button class="dropdown-item" data-bs-target="#signOutModal" data-bs-toggle="modal">Sign Out</button></li>
-                </ul>
-            </div> 
+            
+            {% if not user.is_authenticated %}
+                <button class="btn btn-outline-primary me-2" data-bs-target="#SignIn" data-bs-toggle="modal">Sign in</button>
+                <button class="btn btn-primary" data-bs-target="#SignUp" data-bs-toggle="modal">Sign Up</button>
+            {% else %}
+                <!-- Jika user sudah login, tampilkan dropdown profile -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img class="d-inline-block align-top" src="{% static 'images/profile-new.svg' %}" width="30" height="30">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><button href="{% url 'logout' %}" class="dropdown-item" data-bs-target="#signOutModal" data-bs-toggle="modal">Sign Out</button></li>
+                    </ul>
+                </div> 
+            {% endif %}
+            
 
         </div>
 
@@ -68,49 +72,50 @@
 
 <!-- Sign Out Warning Modal -->
 <div class="modal fade" id="signOutModal" tabindex="-1" aria-labelledby="signOutModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="signOutModalLabel">Sign Out</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to sign out?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="confirmSignOut">Sign Out</button>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signOutModalLabel">Sign Out</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to sign out?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{% url 'logout' %}" class="btn btn-danger">Sign Out</a>  <!-- Ini akan mengarahkan ke URL logout -->
+            </div>
+        </div>
     </div>
-  </div>
 </div>
+
+
 
 {% comment %} MODAL SIGNUP SIGNIN {% endcomment %}
 
-<div class="modal fade" id="SignIn" aria-hidden="true" aria-labelledby="SignInLabe" tabindex="-1">
+<div class="modal fade" id="SignIn" aria-hidden="true" aria-labelledby="SignInLabel" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="SignInLabe">Sign in</h1>
+        <h1 class="modal-title fs-5" id="SignInLabel">Sign in</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
 
-        <form method="post">
-            {% csrf_token %}
+      <form method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+              <label for="inputUsername" class="form-label">Username</label>
+              <input type="text" name="username" class="form-control" id="inputUsername" required>
+          </div>
+          <div class="mb-3">
+              <label for="inputPassword" class="form-label">Password</label>
+              <input type="password" name="password" class="form-control" id="inputPassword" required>
+          </div>
+          <a class="thesis-font-logo" data-bs-target="#SignUp" data-bs-toggle="modal">I don't have an account</a> <br>
+          <button type="submit" class="btn btn-primary w-100 mt-3">Submit</button>
+      </form>
 
-            <div class="mb-3">
-                <label for="inputEmail" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp">
-            </div>
-            <div class="mb-3">
-                <label for="inputPassword" class="form-label">Password</label>
-                <input type="password" class="form-control" id="inputPassword">
-            </div>
-           
-            <a class="thesis-font-logo" data-bs-target="#SignUp" data-bs-toggle="modal">I don't have an account</a> <br>
-            <button type="submit" class="btn btn-primary w-100 mt-3">Submit</button>
-        </form>
 
       </div>
       <div class="modal-footer">
@@ -118,6 +123,7 @@
     </div>
   </div>
 </div>
+
 
 <div class="modal fade" id="SignUp" aria-hidden="true" aria-labelledby="SignUpLabel" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">

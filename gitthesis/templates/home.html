@@ -4,7 +4,12 @@
 
 {% load static %}
 
+
 <div class="container-fluid">
+  
+
+
+
   <div class="row">
 
     <!-- Sidebar Kiri (Top Projects) -->
@@ -41,6 +46,12 @@
     <!-- Kolom Tengah (Card Riwayat) -->
     <div class="col-md-6 col-lg-6" style="margin-top: 5rem; padding-left: 0.1rem; padding-right: 2rem;"> <!-- Tambahkan padding kiri dan kanan -->
 
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        
       <!-- Card Riwayat -->
       <div class="card mb-3" style="max-width: 100%;">
         <div class="row g-0">
@@ -137,6 +148,9 @@
 
   </div>
 </div>
+
+
+
 
 </body>
 
