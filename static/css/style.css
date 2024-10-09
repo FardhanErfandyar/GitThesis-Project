@@ -9,11 +9,12 @@
 
 /* PROJECT */
 
-.container-project{
+.container-project {
     margin-top: 5.5rem;
     display: flex;
     flex-wrap: wrap;
 }
+
 .document {
     background-color: white;
     width: 100%;
@@ -42,7 +43,8 @@
     padding: 20px;
     overflow-y: auto;
     position: sticky;
-    top: 90px; /* Stick to the top */
+    top: 90px;
+    /* Stick to the top */
     height: 100vh;
     min-width: 50px;
 }
@@ -61,7 +63,9 @@
     /* Membiarkan teks membungkus jika perlu */
     overflow-wrap: break-word;
     /* Mengizinkan pembungkusan kata */
-}.sidebar-left .list-unstyled {
+}
+
+.sidebar-left .list-unstyled {
     padding: 0;
     /* Menghapus padding bawaan */
 }
@@ -84,13 +88,15 @@
     padding: 20px;
     border-left: 1px solid #ddd;
     overflow-y: auto;
-    position: sticky;   
-    top: 90px; /* Stick to the top */
+    position: sticky;
+    top: 90px;
+    /* Stick to the top */
     height: 100vh;
     min-width: 50px;
 }
 
-.comments, .history {
+.comments,
+.history {
     background-color: #f8f9fa;
     padding: 15px;
     margin-bottom: 20px;
@@ -98,7 +104,8 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.comments h6, .history h6 {
+.comments h6,
+.history h6 {
     color: #6C48C5;
 }
 
@@ -186,7 +193,7 @@ aside {
 }
 
 /* NAVBAR */
-.thesis-font-logo{
+.thesis-font-logo {
     color: #6C48C5;
 }
 
@@ -205,12 +212,12 @@ aside {
     padding-bottom: 2px;
 }
 
-.btn-primary{
+.btn-primary {
     background-color: #6C48C5;
     border-color: #6C48C5;
 }
 
-.btn-outline-primary{
+.btn-outline-primary {
     border-color: #6C48C5;
 }
 
@@ -258,10 +265,10 @@ aside {
 }
 
 /* LANDING PAGE */
-.header{
+.header {
     background-color: rgb(113, 124, 113);
     height: 80vh;
-    width: 100% ;
+    width: 100%;
     padding: 20px 20px;
 }
 
@@ -274,24 +281,25 @@ aside {
 }
 
 /* MYPROJECT */
- .project-item {
-     border-radius: 15px !important;
-     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-     padding: 15px;
-     transition: transform 0.3s ease, box-shadow 0.3s ease;
- }
+.project-item {
+    border-radius: 15px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
- .project-item:hover {
-     transform: scale(1.02);
-     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
- }
+.project-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
 
 /* PROJECT LINE NUMBER */
 .latex-editor {
     display: flex;
     border: 1px solid #ddd;
     background-color: #f9f9f9;
-    height: 700px; /* Batas tinggi untuk membuat scroll */
+    height: 700px;
+    /* Batas tinggi untuk membuat scroll */
     overflow-y: scroll;
     position: relative;
 }
@@ -303,9 +311,12 @@ aside {
     user-select: none;
     text-align: right;
     white-space: nowrap;
-    position: sticky; /* Gunakan sticky agar tetap di tempat saat di-scroll */
-    top: 0; /* Tetap di atas */
-    width: 50px; /* Lebar tetap */
+    position: sticky;
+    /* Gunakan sticky agar tetap di tempat saat di-scroll */
+    top: 0;
+    /* Tetap di atas */
+    width: 50px;
+    /* Lebar tetap */
     height: 100%;
     overflow: hidden;
 }
@@ -314,12 +325,16 @@ aside {
     font-family: monospace;
     line-height: 1.5;
     padding: 10px;
-    padding-left: 10px; /* Sesuaikan padding kiri */
+    padding-left: 10px;
+    /* Sesuaikan padding kiri */
     border: none;
     resize: none;
-    width: calc(100% - 10px); /* Sesuaikan lebar untuk menghindari overlap */
-    height: calc(100% - 20px); /* Sesuaikan tinggi untuk memperhitungkan padding */
-    overflow-y: auto; /* Pastikan scroll diaktifkan saat konten lebih panjang */
+    width: calc(100% - 10px);
+    /* Sesuaikan lebar untuk menghindari overlap */
+    height: calc(100% - 20px);
+    /* Sesuaikan tinggi untuk memperhitungkan padding */
+    overflow-y: auto;
+    /* Pastikan scroll diaktifkan saat konten lebih panjang */
     overflow-x: hidden;
     outline: none;
     box-sizing: border-box;
@@ -328,24 +343,30 @@ aside {
 /* LATEX TEMPLATE */
 .latex-editor {
     display: flex;
-    flex-direction: row; /* Force horizontal direction */
-    justify-content: space-between; /* Ensure spacing between elements */
-    align-items: flex-start; /* Align elements at the start */
+    flex-direction: row;
+    /* Force horizontal direction */
+    justify-content: space-between;
+    /* Ensure spacing between elements */
+    align-items: flex-start;
+    /* Align elements at the start */
     width: 100%;
-    overflow-x: auto; /* Allow horizontal scrolling if necessary */
+    overflow-x: auto;
+    /* Allow horizontal scrolling if necessary */
 }
 
 .section {
-    flex-grow: 1; /* Make sections grow equally */
-    min-width: 200px; /* Set minimum width for each section */
+    flex-grow: 1;
+    /* Make sections grow equally */
+    min-width: 200px;
+    /* Set minimum width for each section */
     padding: 10px;
 }
 
 .line-numbers {
-    width: 50px; /* Fixed width for line numbers */
+    width: 50px;
+    /* Fixed width for line numbers */
     background-color: #f7f7f7;
     padding: 10px;
     text-align: right;
     white-space: nowrap;
 }
-
