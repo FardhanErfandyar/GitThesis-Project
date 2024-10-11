@@ -8,6 +8,7 @@ class Project(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owned_projects")  # Owner field
     collaborators = models.ManyToManyField(
         User,
         through="Collaborator",
@@ -90,7 +91,7 @@ class ProjectImage(models.Model):
 
 
 class Collaborator(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     invited_at = models.DateTimeField(default=timezone.now)
     is_accepted = models.BooleanField(default=False)

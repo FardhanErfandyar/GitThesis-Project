@@ -10,12 +10,17 @@ urlpatterns = [
     path("", landing, name="landing"),
     path("project/", project),
     path("home/", home, name="home"),
-    path("myprojects/", myprojects),
-    path("myprojects/1", project),
+    path("myprojects/", myprojects, name='myprojects'),
+    path('project/<int:id>/', views.project_detail, name='project_detail'),
     path("preview/", views.preview_latex, name="preview_latex"),
     path("login/", login_view, name="login"),
     path("register/", register, name="register"),
     path("logout/", custom_logout, name="logout"),
+    path("createproject/", createproject, name="createproject"),
+    path("createnewproject/", create_project, name="create_project"),
+    path("project/<int:project_id>/settings/", project_settings, name="project_settings"),
+
+    
 ]
 
 

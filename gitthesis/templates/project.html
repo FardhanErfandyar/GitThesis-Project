@@ -4,12 +4,13 @@
 
 {% load static %}
 
+
     <div class="container-fluid container-project">
         <div class="row no-gutters">
             <!-- Sidebar kiri untuk struktur penulisan -->
             <div class="col-md-2 sidebar-left">
                 <h5 class="gradient-text-sidebar fw-semibold">Struktur Dokumen</h5>
-                <ul class="list-unstyled">
+                <ul class="list-unstyled mb-5">
                     
                     <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
                     href="#">
@@ -47,12 +48,16 @@
                  </a>
                     
                 </ul>
+              
+            <a href="{% url 'project_settings' project.id %}"  class="btn btn-primary btn-sm gradient-text-sidebar mt-5">Project Settings</a> 
+                
             </div>
+
 
             <!-- Overview dokumen di tengah -->
             <div class="col-md-8 col-lg-8">
                 <div class="document">
-                    <h4 class="text-center mb-4 gradient-text fw-semibold">Nama Project</h4>
+                    <h4 class="text-center mb-4 gradient-text fw-semibold">{{project.name}}</h4>
                     
                     <!-- LaTeX Editor -->
                     <!-- latextemplate.html -->
@@ -128,24 +133,34 @@
                 </div>
             </div>
 
-            <!-- Sidebar kanan untuk komentar dan history -->
-            <div class="col-md-2 sidebar-right">
-                <div class="comments">
-                    <h6>Komentar</h6>
-                    <p><strong>User 1:</strong> Coba tambahkan lebih banyak contoh di Bab 2.</p>
-                    <p><strong>User 2:</strong> Perbaiki grammar di paragraf 3.</p>
-                </div>
+  <!-- Sidebar kanan untuk komentar dan history -->
+<div class="col-md-2 sidebar-right">
+    <div class="comments">
+        <h6>Komentar</h6>
+        
+        <!-- Display existing comments -->
+        <p><strong>User 1:</strong> Coba tambahkan lebih banyak contoh di Bab 2.</p>
+        <p><strong>User 2:</strong> Perbaiki grammar di paragraf 3.</p>
 
-                <div class="history">
-                    <h6>Riwayat Perubahan</h6>
-                    <ul class="list-unstyled">
-                        <li>1 jam yang lalu - User 1 mengedit Bab 1.</li>
-                        <li>2 jam yang lalu - User 2 mengomentari paragraf 3.</li>
-                    </ul>
-                </div>
+        <!-- Form to add a new comment -->
+        <form method="POST" action=>  <!-- Ganti 'add_comment' dengan URL yang sesuai -->
+            {% csrf_token %}
+            <div class="mb-3">
+                <textarea class="form-control" name="comment" rows="3" placeholder="Tulis komentar di sini..." required></textarea>
             </div>
-        </div>
+            <button type="submit" class="btn btn-primary">Kirim</button>
+        </form>
     </div>
+
+    <!-- Riwayat Perubahan -->
+    <div class="history mt-4 mb-5">  <!-- Tambahkan margin top untuk memberi jarak -->
+        <h6>Riwayat Perubahan</h6>
+        <ul class="list-unstyled">
+            <li>1 jam yang lalu - User 1 mengedit Bab 1.</li>
+            <li>2 jam yang lalu - User 2 mengomentari paragraf 3.</li>
+        </ul>
+    </div>
+</div>
 
     <!-- Bootstrap JS, Popper.js, and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

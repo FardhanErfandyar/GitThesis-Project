@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="margin-top: 6rem;">
+    <h1 class="gradient-text-sidebar">Settings for {{ project.name }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <!-- Input for editing the project name -->
+        <div class="mb-3">
+            <label for="projectName" class="form-label gradient-text-sidebar">Project Name</label>
+            <input type="text" class="form-control" id="projectName" name="project_name" 
+                   value="{{ project.name }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="collaborators" class="form-label gradient-text-sidebar">Collaborators (comma-separated emails)</label>
+            <input type="text" class="form-control" id="collaborators" name="collaborators" 
+                   value="{{ collaborators|join:', ' }}" required>
+            <small class="form-text text-muted">Add or remove collaborators by changing the emails.</small>
+        </div>
+        
+        <h6>Edit Collaborators:</h6>
+        <div id="collaboratorList">
+            {% for collaborator in collaborators %}
+                <div class="mb-2">
+                    <input type="text" class="form-control" name="collaborator_names" 
+                           value="{{ collaborator.username }}" placeholder="Collaborator Name" required>
+                    <input type="email" class="form-control mt-1" name="collaborator_emails" 
+                           value="{{ collaborator.email }}" placeholder="Collaborator Email" required>
+                </div>
+            {% empty %}
+                <p>No collaborators added.</p>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+
+    <hr>
+
+    <h6>Current Collaborators:</h6>
+    <ul>
+        {% for collaborator in collaborators %}
+            {{ collaborator.username }} ({{ collaborator.email }}) <br>
+        {% empty %}
+            <li>No collaborators added.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -7,16 +7,22 @@ from django.contrib.auth.models import User
 import os
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse
 from gitthesis.forms import CustomUserCreationForm
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
 
 
 def project(request):
     return render(request, "project.html")
+
+def project_detail(request, id):
+    project = get_object_or_404(Project, id=id)  # Fetch the project by ID
+    return render(request, 'project.html', {'project': project})  # Render the project detail template
 
 
 def home(request):
@@ -28,11 +34,94 @@ def landing(request):
 
 
 def myprojects(request):
-    return render(request, "myprojects.html")
+    # Ambil proyek yang dimiliki oleh pengguna yang sedang login
+    projects = Project.objects.filter(owner=request.user)  # Ambil proyek yang dimiliki pengguna
+    
+    return render(request, 'myprojects.html', {'projects': projects})  # Kirim proyek ke template
 
 
-def project(request):
-    return render(request, "project.html")
+
+def createproject(request):
+    return render(request, "createproject.html")
+
+@login_required
+def project_settings(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    
+    # Check if the user is the owner of the project
+    if request.user != project.owner:
+        return HttpResponseForbidden("You are not allowed to edit this project.")
+
+    if request.method == 'POST':
+        # Handle collaborator updates
+        collaborators_emails = request.POST.get('collaborators')
+        if collaborators_emails:
+            emails = [email.strip() for email in collaborators_emails.split(',')]
+            # Clear existing collaborators
+            project.collaborators.clear()
+            for email in emails:
+                try:
+                    user = User.objects.get(email=email)
+                    project.collaborators.add(user)
+                except User.DoesNotExist:
+                    messages.warning(request, f"User with email '{email}' does not exist.")
+        
+        messages.success(request, "Collaborators updated successfully!")
+        return redirect('project_settings', project_id=project.id)
+
+    collaborators = project.collaborators.all()
+    return render(request, 'project_settings.html', {'project': project, 'collaborators': collaborators})
+
+@login_required
+def create_project(request):
+    if request.method == 'POST':
+        project_name = request.POST.get('projectName')
+        collaborator_emails = request.POST.get('collaborators')
+
+        # Validasi: Pastikan project_name tidak kosong
+        if not project_name:
+            messages.error(request, "Project name is required.")
+            return render(request, 'createproject.html', {'messages': messages.get_messages(request)})
+
+        # Validasi: Pastikan panjang project_name tidak lebih dari 255 karakter
+        if len(project_name) > 255:
+            messages.error(request, "Project name cannot exceed 255 characters.")
+            return render(request, 'createproject.html', {'messages': messages.get_messages(request)})
+
+        # Buat project baru dengan owner sebagai user yang login
+        project = Project.objects.create(
+            name=project_name,
+            owner=request.user,  # Set owner sebagai user yang login
+            created_at=timezone.now(),
+        )
+
+        # Tambahkan owner sebagai kolaborator
+        Collaborator.objects.create(
+            project=project, 
+            user=request.user, 
+            invited_at=timezone.now(), 
+            is_accepted=True
+        )
+
+        # Tambahkan kolaborator berdasarkan email
+        if collaborator_emails:
+            emails = collaborator_emails.split(',')
+            for email in emails:
+                email = email.strip()
+                try:
+                    user = User.objects.get(email=email)
+                    Collaborator.objects.create(
+                        project=project, 
+                        user=user, 
+                        invited_at=timezone.now()
+                    )
+                except User.DoesNotExist:
+                    messages.warning(request, f"User with email '{email}' does not exist.")
+
+        messages.success(request, "Project created successfully!")
+        return redirect('myprojects')  # Redirect ke halaman myprojects setelah project dibuat
+
+    return render(request, 'createproject.html')
 
 
 # def login_view(request):
