@@ -7,19 +7,16 @@ from django.contrib.auth.models import User
 import os
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-
-
-# Create your views here.
+from django.http import JsonResponse
+from gitthesis.forms import CustomUserCreationForm
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.hashers import make_password
 
 
 def project(request):
-
-    judul = "coba django"
-    isi = ["isi", "asa", "asu"]
-
-    context = {"title": judul, "tai": isi}
-
-    return render(request, "project.html", context)
+    return render(request, "project.html")
 
 
 def home(request):
@@ -38,6 +35,88 @@ def project(request):
     return render(request, "project.html")
 
 
+# def login_view(request):
+#     if request.method == "POST":
+#         username = request.POST.get("username")
+#         password = request.POST.get("password")
+#         user = authenticate(request, username=username, password=password)
+
+#         if user is not None:
+#             login(request, user)
+#             messages.success(request, "Successfully login")
+#             return redirect("home")
+#         else:
+#             messages.error(request, "Invalid username or password.")
+#             return redirect("landing")
+
+
+#     return render(request, "landing.html")
+
+
+# def register(request):
+#     if request.method == "POST":
+#         form = CustomUserCreationForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             return JsonResponse({"success": True})
+#         else:
+#             return JsonResponse({"success": False, "error": form.errors.as_json()})
+
+#     form = CustomUserCreationForm()
+#     return render(request, "landing.html", {"form": form})
+
+
+def register(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password1 = request.POST.get("password1")
+        password2 = request.POST.get("password2")
+
+        errors = {}
+
+        # Validasi username
+        if not username:
+            errors["username"] = "Username is required"
+        elif User.objects.filter(username=username).exists():
+            errors["username"] = "Username already exists"
+
+        # Validasi email
+        if not email:
+            errors["email"] = "Email is required"
+        else:
+            try:
+                validate_email(email)
+                if User.objects.filter(email=email).exists():
+                    errors["email"] = "Email already exists"
+            except ValidationError:
+                errors["email"] = "Enter a valid email address"
+
+        # Validasi password
+        if not password1 or not password2:
+            errors["password"] = "Password is required"
+        elif password1 != password2:
+            errors["password"] = "Passwords do not match"
+        else:
+            try:
+                validate_password(password1)
+            except ValidationError as e:
+                errors["password"] = list(e.messages)
+
+        if errors:
+            return JsonResponse({"success": False, "error": errors})
+
+        user = User.objects.create(
+            username=username,
+            email=email,
+            password=make_password(password1),
+        )
+
+        return JsonResponse({"success": True})
+
+    return render(request, "landing.html")
+
+
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -46,11 +125,11 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            messages.success(request, "Successfully login")
-            return redirect("home")
+            return JsonResponse({"success": True})
         else:
-            messages.error(request, "Invalid username or password.")
-            return redirect("landing")
+            return JsonResponse(
+                {"success": False, "error": "Invalid username or password."}
+            )
 
     return render(request, "landing.html")
 
