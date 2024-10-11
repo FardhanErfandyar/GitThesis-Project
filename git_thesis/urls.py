@@ -14,6 +14,7 @@ urlpatterns = [
     path("myprojects/1", project),
     path("preview/", views.preview_latex, name="preview_latex"),
     path("login/", login_view, name="login"),
+    path("register/", register, name="register"),
     path("logout/", custom_logout, name="logout"),
 ]
 
