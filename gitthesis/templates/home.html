@@ -30,12 +30,15 @@
             </li>
 
             <!-- Example Projects -->
+            {% for project in projects %}
             <li class="nav-item">
-              <a class="nav-link text-dark fw-medium" href="#">FardhanErfandyar/Clustering</a>
+                <a class="nav-link text-dark fw-medium" href="{% url 'project_detail' project.id %}">{{project.owner.username}}/{{ project.name }}</a>
             </li>
+            {% empty %}
             <li class="nav-item">
-              <a class="nav-link text-dark fw-medium" href="#">FardhanErfandyar/KNNCluster</a>
+                <a class="nav-link text-dark fw-medium" href="#">No projects available.</a>
             </li>
+            {% endfor %}
 
             <li class="border-top my-3" style="border-width: 5px;"></li> <!-- Divider -->
           </ul>
@@ -123,18 +126,18 @@
             </li>
 
             <!-- Example Networks -->
-            <li class="nav-item">
-              <a class="nav-link text-dark fw-medium d-flex align-items-center" href="#">
-                <img class="me-2" src="{% static 'images/profile-new.svg' %}" width="30" height="30" alt="Profile">
-                <span>Hiekam Nursal</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark fw-medium d-flex align-items-center" href="#">
-                <img class="me-2" src="{% static 'images/profile-new.svg' %}" width="30" height="30" alt="Profile">
-                <span>Wildan Arga</span>
-              </a>
-            </li>
+            {% for collaborator in collaborators %}
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-medium d-flex align-items-center" href="#">
+                        <img class="me-2" src="{% static 'images/profile-new.svg' %}" width="30" height="30" alt="Profile">
+                        <span>{{ collaborator.username }}</span>
+                    </a>
+                </li>
+                {% empty %}
+                <li class="nav-item">
+                    <span class="nav-link text-dark fw-medium">No collaborators found.</span>
+                </li>
+                {% endfor %}
           </ul>
         </div>
       </aside>

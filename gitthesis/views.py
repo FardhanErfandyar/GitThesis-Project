@@ -15,31 +15,29 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 
 
 def project(request):
     return render(request, "project.html")
 
 def project_detail(request, id):
-    project = get_object_or_404(Project, id=id)  # Fetch the project by ID
+    project = get_object_or_404(Project, id=id) 
     return render(request, 'project.html', {'project': project})  # Render the project detail template
 
-
 def home(request):
-    return render(request, "home.html")
-
+    projects = Project.objects.filter(collaborators=request.user)
+    collaborators = User.objects.filter(Q(owned_projects__in=projects) | Q(projects__in=projects)).exclude(id=request.user.id).distinct()
+    return render(request, "home.html",  {'projects': projects, 'collaborators': collaborators})
 
 def landing(request):
     return render(request, "landing.html")
 
 
 def myprojects(request):
-    # Ambil proyek yang dimiliki oleh pengguna yang sedang login
-    projects = Project.objects.filter(owner=request.user)  # Ambil proyek yang dimiliki pengguna
+    projects = Project.objects.filter(collaborators=request.user)
     
     return render(request, 'myprojects.html', {'projects': projects})  # Kirim proyek ke template
-
-
 
 def createproject(request):
     return render(request, "createproject.html")
@@ -122,38 +120,6 @@ def create_project(request):
         return redirect('myprojects')  # Redirect ke halaman myprojects setelah project dibuat
 
     return render(request, 'createproject.html')
-
-
-# def login_view(request):
-#     if request.method == "POST":
-#         username = request.POST.get("username")
-#         password = request.POST.get("password")
-#         user = authenticate(request, username=username, password=password)
-
-#         if user is not None:
-#             login(request, user)
-#             messages.success(request, "Successfully login")
-#             return redirect("home")
-#         else:
-#             messages.error(request, "Invalid username or password.")
-#             return redirect("landing")
-
-
-#     return render(request, "landing.html")
-
-
-# def register(request):
-#     if request.method == "POST":
-#         form = CustomUserCreationForm(request.POST)
-#         if form.is_valid():
-#             user = form.save()
-#             return JsonResponse({"success": True})
-#         else:
-#             return JsonResponse({"success": False, "error": form.errors.as_json()})
-
-#     form = CustomUserCreationForm()
-#     return render(request, "landing.html", {"form": form})
-
 
 def register(request):
     if request.method == "POST":
