@@ -15,18 +15,38 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 
 
 def project(request):
     return render(request, "project.html")
 
-def project_detail(request, id):
-    project = get_object_or_404(Project, id=id)  # Fetch the project by ID
+def project_detail(request, project_id):
+    project = get_object_or_404(Project, id=project_id) 
     return render(request, 'project.html', {'project': project})  # Render the project detail template
 
 
 def home(request):
-    return render(request, "home.html")
+    # Get all projects where the user is either the owner or an accepted collaborator
+    projects = Project.objects.filter(
+        Q(owner=request.user) | Q(collaborator__user=request.user, collaborator__is_accepted=True)
+    ).distinct()
+
+    # Get collaborators who are either owners or accepted collaborators in those projects
+    collaborators = User.objects.filter(
+        Q(owned_projects__in=projects) | Q(collaborator__project__in=projects, collaborator__is_accepted=True)
+    ).exclude(id=request.user.id).distinct()
+    
+    invitations = Collaborator.objects.filter(user=request.user, is_accepted=False)
+    
+    context = {
+        'projects': projects,
+        'collaborators': collaborators,
+        'invitations': invitations
+    }
+
+    return render(request, "home.html", context)
+
 
 
 def landing(request):
@@ -34,43 +54,114 @@ def landing(request):
 
 
 def myprojects(request):
-    # Ambil proyek yang dimiliki oleh pengguna yang sedang login
-    projects = Project.objects.filter(owner=request.user)  # Ambil proyek yang dimiliki pengguna
+    projects = Project.objects.filter(collaborators=request.user)
     
     return render(request, 'myprojects.html', {'projects': projects})  # Kirim proyek ke template
-
-
 
 def createproject(request):
     return render(request, "createproject.html")
 
 @login_required
+def inbox(request):
+    # Get all invitations for the logged-in user
+    invitations = Collaborator.objects.filter(user=request.user, is_accepted=False)
+
+    return render(request, 'inbox.html', {'invitations': invitations})
+
+@login_required
+def accept_invitation(request, invitation_id):
+    try:
+        invitation = Collaborator.objects.get(id=invitation_id, user=request.user, is_accepted=False)
+        invitation.is_accepted = True
+        invitation.save()
+        messages.success(request, "Invitation accepted!")
+    except Collaborator.DoesNotExist:
+        messages.error(request, "Invitation not found or already accepted.")
+
+    return redirect('inbox')
+
+@login_required
+def reject_invitation(request, invitation_id):
+    try:
+        invitation = Collaborator.objects.get(id=invitation_id, user=request.user)
+        invitation.delete()  
+        messages.success(request, "Invitation rejected successfully.")
+    except Collaborator.DoesNotExist:
+        messages.error(request, "Invitation not found or you don't have permission to reject it.")
+    
+    return redirect('inbox') 
+
+@login_required
 def project_settings(request, project_id):
     project = get_object_or_404(Project, id=project_id)
-    
+
     # Check if the user is the owner of the project
     if request.user != project.owner:
         return HttpResponseForbidden("You are not allowed to edit this project.")
 
     if request.method == 'POST':
-        # Handle collaborator updates
         collaborators_emails = request.POST.get('collaborators')
         if collaborators_emails:
             emails = [email.strip() for email in collaborators_emails.split(',')]
-            # Clear existing collaborators
-            project.collaborators.clear()
+            
+            # Get current collaborators emails for validation
+            current_collaborators = project.collaborator_set.all()
+            current_collaborator_emails = current_collaborators.values_list('user__email', flat=True)
+
+            # Clear existing collaborators only if they are not accepted
+            for collaborator in current_collaborators:
+                if not collaborator.is_accepted:
+                    collaborator.delete()
+
+            # Add the owner as a collaborator with accepted status if not already present
+            if request.user not in [c.user for c in current_collaborators]:
+                Collaborator.objects.create(
+                    project=project,
+                    user=request.user,
+                    invited_at=timezone.now(),
+                    is_accepted=True
+                )
+
             for email in emails:
+                # Skip emails that are already collaborators with is_accepted=False
+                if email in current_collaborator_emails:
+                    messages.warning(request, f"User with email '{email}' already has an invitation.")
+                    continue  # Skip to the next email
+                
                 try:
                     user = User.objects.get(email=email)
-                    project.collaborators.add(user)
+                    if user != request.user:  
+                        # Check if the user is already a collaborator
+                        if user.email not in current_collaborator_emails:
+                            # Only create a collaborator entry if the user is not already a collaborator
+                            Collaborator.objects.create(
+                                project=project, 
+                                user=user, 
+                                invited_at=timezone.now(), 
+                                is_accepted=False  # Set invitation status to False
+                            )
+                        else:
+                            messages.warning(request, f"User with email '{email}' is already a collaborator.")
+                    else:
+                        messages.warning(request, "You cannot invite yourself as a collaborator.")
                 except User.DoesNotExist:
                     messages.warning(request, f"User with email '{email}' does not exist.")
-        
+
         messages.success(request, "Collaborators updated successfully!")
         return redirect('project_settings', project_id=project.id)
 
-    collaborators = project.collaborators.all()
-    return render(request, 'project_settings.html', {'project': project, 'collaborators': collaborators})
+    # Get all collaborators for the input value
+    all_collaborators = project.collaborator_set.all()  # Use reverse relation
+    collaboratorsAccepted = all_collaborators.filter(is_accepted=True)  # Get only accepted collaborators
+
+    return render(request, 'project_settings.html', {
+        'project': project,
+        'all_collaborators': all_collaborators,
+        'collaboratorsAccepted': collaboratorsAccepted
+    })
+
+
+
 
 @login_required
 def create_project(request):
@@ -78,24 +169,24 @@ def create_project(request):
         project_name = request.POST.get('projectName')
         collaborator_emails = request.POST.get('collaborators')
 
-        # Validasi: Pastikan project_name tidak kosong
+        # Validate: Ensure project_name is not empty
         if not project_name:
             messages.error(request, "Project name is required.")
             return render(request, 'createproject.html', {'messages': messages.get_messages(request)})
 
-        # Validasi: Pastikan panjang project_name tidak lebih dari 255 karakter
+        # Validate: Ensure project_name length does not exceed 255 characters
         if len(project_name) > 255:
             messages.error(request, "Project name cannot exceed 255 characters.")
             return render(request, 'createproject.html', {'messages': messages.get_messages(request)})
 
-        # Buat project baru dengan owner sebagai user yang login
+        # Create a new project with the logged-in user as the owner
         project = Project.objects.create(
             name=project_name,
-            owner=request.user,  # Set owner sebagai user yang login
+            owner=request.user,  # Set owner as the logged-in user
             created_at=timezone.now(),
         )
 
-        # Tambahkan owner sebagai kolaborator
+        # Add the owner as a collaborator with accepted status
         Collaborator.objects.create(
             project=project, 
             user=request.user, 
@@ -103,56 +194,31 @@ def create_project(request):
             is_accepted=True
         )
 
-        # Tambahkan kolaborator berdasarkan email
+        # Add collaborators based on emails
         if collaborator_emails:
             emails = collaborator_emails.split(',')
             for email in emails:
                 email = email.strip()
                 try:
                     user = User.objects.get(email=email)
-                    Collaborator.objects.create(
-                        project=project, 
-                        user=user, 
-                        invited_at=timezone.now()
-                    )
+                    # Ensure the user is not the owner of the project
+                    if user != request.user:  
+                        # Create a collaborator entry with is_accepted set to False
+                        Collaborator.objects.create(
+                            project=project, 
+                            user=user, 
+                            invited_at=timezone.now(), 
+                            is_accepted=False  # Invitation status set to False
+                        )
+                    else:
+                        messages.warning(request, "You cannot invite yourself as a collaborator.")
                 except User.DoesNotExist:
                     messages.warning(request, f"User with email '{email}' does not exist.")
 
-        messages.success(request, "Project created successfully!")
-        return redirect('myprojects')  # Redirect ke halaman myprojects setelah project dibuat
+        messages.success(request, "Project created successfully! Invitations sent to collaborators.")
+        return redirect('myprojects')  # Redirect to the myprojects page after project creation
 
     return render(request, 'createproject.html')
-
-
-# def login_view(request):
-#     if request.method == "POST":
-#         username = request.POST.get("username")
-#         password = request.POST.get("password")
-#         user = authenticate(request, username=username, password=password)
-
-#         if user is not None:
-#             login(request, user)
-#             messages.success(request, "Successfully login")
-#             return redirect("home")
-#         else:
-#             messages.error(request, "Invalid username or password.")
-#             return redirect("landing")
-
-
-#     return render(request, "landing.html")
-
-
-# def register(request):
-#     if request.method == "POST":
-#         form = CustomUserCreationForm(request.POST)
-#         if form.is_valid():
-#             user = form.save()
-#             return JsonResponse({"success": True})
-#         else:
-#             return JsonResponse({"success": False, "error": form.errors.as_json()})
-
-#     form = CustomUserCreationForm()
-#     return render(request, "landing.html", {"form": form})
 
 
 def register(request):
@@ -227,26 +293,6 @@ def custom_logout(request):
     logout(request)
     return redirect("landing")
 
-
-def invite_user(request, project_id, user_id):
-    project = Project.objects.get(id=project_id)
-    user_to_invite = User.objects.get(id=user_id)
-
-    # Undang user
-    invitation = Collaborator.objects.create(
-        project=project,
-        user=user_to_invite,
-        invited_at=timezone.now(),
-        is_accepted=False,
-    )
-    return redirect("project_detail", project_id=project_id)
-
-
-def accept_invitation(request, invitation_id):
-    invitation = Collaborator.objects.get(id=invitation_id)
-    invitation.is_accepted = True
-    invitation.save()
-    return redirect("project_detail", project_id=invitation.project.id)
 
 
 # LATEX
