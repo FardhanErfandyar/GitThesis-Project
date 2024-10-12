@@ -17,7 +17,7 @@
         <div class="mb-3">
             <label for="collaborators" class="form-label gradient-text-sidebar">Collaborators (comma-separated emails)</label>
             <input type="text" class="form-control" id="collaborators" name="collaborators" 
-                   value="{% for collaborator in collaborators %}{{ collaborator.email }}{% if not forloop.last %}, {% endif %}{% endfor %}" required>
+            value="{% for collaborator in all_collaborators %}{{ collaborator.user.email }}{% if not forloop.last %}, {% endif %}{% endfor %}" required>
             <small class="form-text text-muted">Add or remove collaborators by changing the emails.</small>
         </div>
         
@@ -28,11 +28,12 @@
 
     <h6>Current Collaborators:</h6>
     <ul>
-        {% for collaborator in collaborators %}
-            {{ collaborator.username }} ({{ collaborator.email }}) <br>
+        {% for collaboratorAccepted in collaboratorsAccepted %}
+            <li>{{ collaboratorAccepted.user.username }} - {{ collaboratorAccepted.user.email }}</li>
         {% empty %}
             <li>No collaborators added.</li>
         {% endfor %}
     </ul>
+    
 </div>
 {% endblock %}

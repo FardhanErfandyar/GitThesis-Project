@@ -50,6 +50,8 @@
     <div class="col-md-6 col-lg-6" style="margin-top: 5rem; padding-left: 0.1rem; padding-right: 2rem;"> <!-- Tambahkan padding kiri dan kanan -->
 
       <!-- Card Riwayat -->
+      {% for invitation in invitations %}
+      <!-- Card Riwayat -->
       <div class="card mb-3" style="max-width: 100%;">
         <div class="row g-0">
           <div class="col-md-2 d-flex align-items-center justify-content-center">
@@ -57,61 +59,15 @@
           </div>
           <div class="col-md-10">
             <div class="card-body">
-              <h5 class="card-title">Hiekam Nursal</h5>
-              <p class="card-text">baru saja melakukan perubahan pada project "Clustering".</p>
-              <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+              <h5 class="card-title">{{ invitation.project.owner.username }}</h5> <!-- Nama orang yang invite -->
+              <p class="card-text">{{ invitation.project.owner.username }} has invited you to join the project "{{ invitation.project.name }}".</p> <!-- Pesan undangan dan nama proyek -->
+              <p class="card-text"><small class="text-body-secondary">Invitation sent on {{ invitation.invited_at|date:"d M Y H:i" }}</small></p> <!-- Waktu undangan -->
             </div>
           </div>
         </div>
       </div>
+    {% endfor %}
 
-      <!-- Card Wildan Arga -->
-      <div class="card mb-3" style="max-width: 100%;">
-        <div class="row g-0">
-          <div class="col-md-2 d-flex align-items-center justify-content-center">
-            <img src="{% static 'images/profile-new.svg' %}" class="img-fluid rounded-start" alt="Profile Icon" style="width: 60px; height: 60px;">
-          </div>
-          <div class="col-md-10">
-            <div class="card-body">
-              <h5 class="card-title">Wildan Arga</h5>
-              <p class="card-text">melakukan perubahan pada project "KNNCluster".</p>
-              <p class="card-text"><small class="text-body-secondary">Last updated 5 mins ago</small></p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card Fardhan Erfandyar -->
-      <div class="card mb-3" style="max-width: 100%;">
-        <div class="row g-0">
-          <div class="col-md-2 d-flex align-items-center justify-content-center">
-            <img src="{% static 'images/profile-new.svg' %}" class="img-fluid rounded-start" alt="Profile Icon" style="width: 60px; height: 60px;">
-          </div>
-          <div class="col-md-10">
-            <div class="card-body">
-              <h5 class="card-title">Fardhan Erfandyar</h5>
-              <p class="card-text">memberikan komentar pada project "Clustering".</p>
-              <p class="card-text"><small class="text-body-secondary">Last updated 5 mins ago</small></p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card Tata -->
-      <div class="card mb-3" style="max-width: 100%;">
-        <div class="row g-0">
-          <div class="col-md-2 d-flex align-items-center justify-content-center">
-            <img src="{% static 'images/profile-new.svg' %}" class="img-fluid rounded-start" alt="Profile Icon" style="width: 60px; height: 60px;">
-          </div>
-          <div class="col-md-10">
-            <div class="card-body">
-              <h5 class="card-title">Tata</h5>
-              <p class="card-text">memberikan komentar pada project "KNNCluster".</p>
-              <p class="card-text"><small class="text-body-secondary">Last updated 5 mins ago</small></p>
-            </div>
-          </div>
-        </div>
-      </div>
 
     </div>
 
