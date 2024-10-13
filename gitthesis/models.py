@@ -110,3 +110,11 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.username} on Section {self.section.id} (Created: {self.created_at})"
+    
+
+class Invitation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    is_accepted = models.BooleanField(default=False)
+    is_rejected = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)

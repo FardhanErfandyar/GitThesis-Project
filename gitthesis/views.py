@@ -2,7 +2,7 @@ import subprocess
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from .models import Project, Collaborator
+from .models import Invitation, Project, Collaborator
 from django.contrib.auth.models import User
 import os
 from django.contrib.auth import authenticate, login, logout
@@ -23,7 +23,7 @@ def project(request):
 
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id) 
-    return render(request, 'project.html', {'project': project})  # Render the project detail template
+    return render(request, 'project.html', {'project': project})
 
 
 def home(request):
@@ -52,21 +52,61 @@ def home(request):
 def landing(request):
     return render(request, "landing.html")
 
+@login_required
+def profile(request):
+    projects = Project.objects.filter(owner=request.user)[:3]
+    Contributedprojects = Project.objects.filter(collaborators=request.user)[:3]
+    
+    # Get all related projects and collaborators without the LIMIT
+    all_projects = Project.objects.filter(owner=request.user)
+    all_contributed_projects = Project.objects.filter(collaborators=request.user)
+    
+    # Count the total number of projects (owned and contributed)
+    projectcount = all_projects.union(all_contributed_projects).count()
+    
+    # Get the networks without the LIMIT issue
+    networks = User.objects.filter(
+        Q(owned_projects__in=all_projects) | 
+        Q(collaborator__project__in=all_projects, collaborator__is_accepted=True)
+    ).exclude(id=request.user.id).distinct()
+    
+    networkscount = networks.count()
+    
+    return render(request, 'profile.html', {'user': request.user, 
+                                            'projects': projects, 
+                                            'contributedprojects':Contributedprojects,
+                                            'projectcount':projectcount,
+                                            'networkscount':networkscount,
+                                            })
+
 
 def myprojects(request):
-    projects = Project.objects.filter(collaborators=request.user)
-    
-    return render(request, 'myprojects.html', {'projects': projects})  # Kirim proyek ke template
+    filter_option = request.GET.get('filter', 'all') 
+    order_option = request.GET.get('order', 'latest')  
 
-def createproject(request):
-    return render(request, "createproject.html")
+    # Determine the base queryset based on the filter
+    if filter_option == 'mine':
+        projects = Project.objects.filter(owner=request.user)
+    else:
+        projects = Project.objects.filter(collaborators=request.user)
+
+    # Order the projects based on the order option
+    if order_option == 'latest':
+        projects = projects.order_by('-created_at') 
+    else:
+        projects = projects.order_by('created_at')  
+
+    return render(request, 'myprojects.html', {'projects': projects})
+  
 
 @login_required
 def inbox(request):
-    # Get all invitations for the logged-in user
     invitations = Collaborator.objects.filter(user=request.user, is_accepted=False)
 
-    return render(request, 'inbox.html', {'invitations': invitations})
+    return render(request, 'inbox.html', {
+        'invitations': invitations, 
+    })
+
 
 @login_required
 def accept_invitation(request, invitation_id):
@@ -160,7 +200,39 @@ def project_settings(request, project_id):
         'collaboratorsAccepted': collaboratorsAccepted
     })
 
+@login_required
+def remove_collaborator(request, project_id, collaborator_id):
+    project = get_object_or_404(Project, id=project_id)
 
+    # Pastikan hanya pemilik proyek yang bisa menghapus kolaborator
+    if request.user != project.owner:
+        return HttpResponseForbidden("You are not allowed to remove collaborators from this project.")
+
+    try:
+        # Dapatkan kolaborator yang ingin dihapus
+        collaborator = Collaborator.objects.get(id=collaborator_id, project=project, is_accepted=True)
+
+        # Cek apakah kolaborator yang ingin dihapus adalah pemilik proyek
+        if collaborator.user == project.owner:
+            messages.error(request, "You cannot remove the project owner.")
+            return redirect('project_settings', project_id=project.id)
+        
+        # Hapus kolaborator dari proyek
+        collaborator.delete()
+
+        messages.success(request, f"Collaborator {collaborator.user.username} has been removed successfully.")
+    except Collaborator.DoesNotExist:
+        messages.error(request, "Collaborator not found or they haven't accepted the invitation yet.")
+
+    return redirect('project_settings', project_id=project.id)
+
+
+@login_required
+def notifications_count(request):
+    if request.user.is_authenticated:
+        count = Collaborator.objects.filter(user=request.user, is_accepted=False).count()
+        return {'invitations_count': count}
+    return {'invitations_count': 0}
 
 
 @login_required
