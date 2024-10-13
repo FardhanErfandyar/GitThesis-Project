@@ -10,12 +10,19 @@
       <div class="col col-lg-9 col-xl-7">
         <div class="card">
           <div class="rounded-top text-white d-flex flex-row" style="background: linear-gradient(to right, #1230AE, #6C48C5, #C68FE6); height:200px;">
-            <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
-              <img src="{% static 'images/profile-new.svg' %}" alt="Profile Picture" class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1; border-radius: 50%;">
-              <button type="button" class="btn btn-outline-primary" style="z-index: 1;">
-                Edit Image
-              </button>
+            <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px; height: 150px;">
+                <img id="profileImage" src="{% if user.userprofile.profile_picture %}{{ user.userprofile.profile_picture.url }}{% else %}{% static 'images/profile-new.svg' %}{% endif %}" alt="Profile Picture" class="img-fluid img-thumbnail" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; cursor: pointer;" onclick="document.getElementById('fileInput').click();">
+            
+                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                <button type="button" class="btn btn-outline-primary btn-sm" style="z-index: 1;" onclick="selectImage();">
+                    Update Image
+                </button>
+            
+                {% for message in messages %}
+                    <div class="alert alert-info">{{ message }}</div>
+                {% endfor %}
             </div>
+            
             <div class="ms-3" style="margin-top: 130px;">
               <h5>{{ user.username }}</h5>
               <p>{{ user.email }}</p>
@@ -71,5 +78,59 @@
     </div>
   </div>
 </section>
+
+<script>
+    let selectedFile;
+
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const profileImage = document.getElementById('profileImage');
+            profileImage.src = reader.result; // Show preview of the selected image
+        };
+        selectedFile = event.target.files[0]; // Store the selected file
+        reader.readAsDataURL(selectedFile);
+        
+        // Ask the user for confirmation after selecting an image
+        const userConfirmed = confirm("Do you want to upload this image?");
+        if (userConfirmed) {
+            uploadImage(); // Proceed to upload if confirmed
+        } else {
+            // Reset the file input if the user cancels
+            document.getElementById('fileInput').value = "";
+            selectedFile = null; // Clear the selected file
+        }
+    }
+
+    function selectImage() {
+        const fileInput = document.getElementById('fileInput');
+        fileInput.click(); // Open file selection dialog
+    }
+
+    function uploadImage() {
+        const formData = new FormData();
+        formData.append('profile_picture', selectedFile);
+
+        fetch('{% url "upload_profile_image" %}', { // Update with your actual URL
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token for security
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload(); // Reload the page to see the updated image
+            } else {
+                alert("Failed to upload image. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("An error occurred while uploading the image.");
+        });
+    }
+</script>
+
 
 {% endblock content %}

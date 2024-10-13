@@ -118,3 +118,10 @@ class Invitation(models.Model):
     is_accepted = models.BooleanField(default=False)
     is_rejected = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True)
+
+    def __str__(self):
+        return self.user.username

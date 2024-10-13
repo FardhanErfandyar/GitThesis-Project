@@ -2,13 +2,12 @@ import subprocess
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from .models import Invitation, Project, Collaborator
+from .models import Invitation, Project, Collaborator, UserProfile
 from django.contrib.auth.models import User
 import os
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import HttpResponseForbidden, JsonResponse
-from gitthesis.forms import CustomUserCreationForm
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
@@ -27,12 +26,10 @@ def project_detail(request, project_id):
 
 
 def home(request):
-    # Get all projects where the user is either the owner or an accepted collaborator
     projects = Project.objects.filter(
         Q(owner=request.user) | Q(collaborator__user=request.user, collaborator__is_accepted=True)
     ).distinct()
 
-    # Get collaborators who are either owners or accepted collaborators in those projects
     collaborators = User.objects.filter(
         Q(owned_projects__in=projects) | Q(collaborator__project__in=projects, collaborator__is_accepted=True)
     ).exclude(id=request.user.id).distinct()
@@ -57,14 +54,11 @@ def profile(request):
     projects = Project.objects.filter(owner=request.user)[:3]
     Contributedprojects = Project.objects.filter(collaborators=request.user)[:3]
     
-    # Get all related projects and collaborators without the LIMIT
     all_projects = Project.objects.filter(owner=request.user)
     all_contributed_projects = Project.objects.filter(collaborators=request.user)
     
-    # Count the total number of projects (owned and contributed)
     projectcount = all_projects.union(all_contributed_projects).count()
     
-    # Get the networks without the LIMIT issue
     networks = User.objects.filter(
         Q(owned_projects__in=all_projects) | 
         Q(collaborator__project__in=all_projects, collaborator__is_accepted=True)
@@ -78,19 +72,47 @@ def profile(request):
                                             'projectcount':projectcount,
                                             'networkscount':networkscount,
                                             })
+    
+
+@login_required
+def upload_profile_image(request):
+    if request.method == 'POST':
+        # Check if the user has a UserProfile instance
+        user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        # Get the uploaded file from the request
+        profile_picture = request.FILES.get('profile_picture')
+        
+        if profile_picture:
+            # Check if there is an existing profile picture and delete it
+            if user_profile.profile_picture:
+                # Construct the full file path
+                old_picture_path = os.path.join(settings.MEDIA_ROOT, str(user_profile.profile_picture))
+                if os.path.isfile(old_picture_path):
+                    os.remove(old_picture_path)  # Delete the old profile picture
+            
+            # Update the profile picture
+            user_profile.profile_picture = profile_picture
+            user_profile.save()
+            messages.success(request, "Profile picture updated successfully!")
+        else:
+            messages.error(request, "No image selected. Please choose an image to upload.")
+
+        return redirect('profile')  
+
+    return render(request, 'profile.html')
+
 
 
 def myprojects(request):
     filter_option = request.GET.get('filter', 'all') 
     order_option = request.GET.get('order', 'latest')  
 
-    # Determine the base queryset based on the filter
     if filter_option == 'mine':
         projects = Project.objects.filter(owner=request.user)
     else:
         projects = Project.objects.filter(collaborators=request.user)
 
-    # Order the projects based on the order option
     if order_option == 'latest':
         projects = projects.order_by('-created_at') 
     else:
@@ -135,7 +157,6 @@ def reject_invitation(request, invitation_id):
 def project_settings(request, project_id):
     project = get_object_or_404(Project, id=project_id)
 
-    # Check if the user is the owner of the project
     if request.user != project.owner:
         return HttpResponseForbidden("You are not allowed to edit this project.")
 
@@ -144,16 +165,13 @@ def project_settings(request, project_id):
         if collaborators_emails:
             emails = [email.strip() for email in collaborators_emails.split(',')]
             
-            # Get current collaborators emails for validation
             current_collaborators = project.collaborator_set.all()
             current_collaborator_emails = current_collaborators.values_list('user__email', flat=True)
 
-            # Clear existing collaborators only if they are not accepted
             for collaborator in current_collaborators:
                 if not collaborator.is_accepted:
                     collaborator.delete()
 
-            # Add the owner as a collaborator with accepted status if not already present
             if request.user not in [c.user for c in current_collaborators]:
                 Collaborator.objects.create(
                     project=project,
@@ -163,22 +181,19 @@ def project_settings(request, project_id):
                 )
 
             for email in emails:
-                # Skip emails that are already collaborators with is_accepted=False
                 if email in current_collaborator_emails:
                     messages.warning(request, f"User with email '{email}' already has an invitation.")
-                    continue  # Skip to the next email
+                    continue  
                 
                 try:
                     user = User.objects.get(email=email)
                     if user != request.user:  
-                        # Check if the user is already a collaborator
                         if user.email not in current_collaborator_emails:
-                            # Only create a collaborator entry if the user is not already a collaborator
                             Collaborator.objects.create(
                                 project=project, 
                                 user=user, 
                                 invited_at=timezone.now(), 
-                                is_accepted=False  # Set invitation status to False
+                                is_accepted=False 
                             )
                         else:
                             messages.warning(request, f"User with email '{email}' is already a collaborator.")
@@ -190,9 +205,8 @@ def project_settings(request, project_id):
         messages.success(request, "Collaborators updated successfully!")
         return redirect('project_settings', project_id=project.id)
 
-    # Get all collaborators for the input value
-    all_collaborators = project.collaborator_set.all()  # Use reverse relation
-    collaboratorsAccepted = all_collaborators.filter(is_accepted=True)  # Get only accepted collaborators
+    all_collaborators = project.collaborator_set.all()  
+    collaboratorsAccepted = all_collaborators.filter(is_accepted=True)  
 
     return render(request, 'project_settings.html', {
         'project': project,
@@ -204,20 +218,16 @@ def project_settings(request, project_id):
 def remove_collaborator(request, project_id, collaborator_id):
     project = get_object_or_404(Project, id=project_id)
 
-    # Pastikan hanya pemilik proyek yang bisa menghapus kolaborator
     if request.user != project.owner:
         return HttpResponseForbidden("You are not allowed to remove collaborators from this project.")
 
     try:
-        # Dapatkan kolaborator yang ingin dihapus
         collaborator = Collaborator.objects.get(id=collaborator_id, project=project, is_accepted=True)
 
-        # Cek apakah kolaborator yang ingin dihapus adalah pemilik proyek
         if collaborator.user == project.owner:
             messages.error(request, "You cannot remove the project owner.")
             return redirect('project_settings', project_id=project.id)
         
-        # Hapus kolaborator dari proyek
         collaborator.delete()
 
         messages.success(request, f"Collaborator {collaborator.user.username} has been removed successfully.")
@@ -241,24 +251,20 @@ def create_project(request):
         project_name = request.POST.get('projectName')
         collaborator_emails = request.POST.get('collaborators')
 
-        # Validate: Ensure project_name is not empty
         if not project_name:
             messages.error(request, "Project name is required.")
             return render(request, 'createproject.html', {'messages': messages.get_messages(request)})
 
-        # Validate: Ensure project_name length does not exceed 255 characters
         if len(project_name) > 255:
             messages.error(request, "Project name cannot exceed 255 characters.")
             return render(request, 'createproject.html', {'messages': messages.get_messages(request)})
 
-        # Create a new project with the logged-in user as the owner
         project = Project.objects.create(
             name=project_name,
-            owner=request.user,  # Set owner as the logged-in user
+            owner=request.user,  
             created_at=timezone.now(),
         )
 
-        # Add the owner as a collaborator with accepted status
         Collaborator.objects.create(
             project=project, 
             user=request.user, 
@@ -266,21 +272,18 @@ def create_project(request):
             is_accepted=True
         )
 
-        # Add collaborators based on emails
         if collaborator_emails:
             emails = collaborator_emails.split(',')
             for email in emails:
                 email = email.strip()
                 try:
                     user = User.objects.get(email=email)
-                    # Ensure the user is not the owner of the project
                     if user != request.user:  
-                        # Create a collaborator entry with is_accepted set to False
                         Collaborator.objects.create(
                             project=project, 
                             user=user, 
                             invited_at=timezone.now(), 
-                            is_accepted=False  # Invitation status set to False
+                            is_accepted=False  
                         )
                     else:
                         messages.warning(request, "You cannot invite yourself as a collaborator.")
@@ -288,7 +291,7 @@ def create_project(request):
                     messages.warning(request, f"User with email '{email}' does not exist.")
 
         messages.success(request, "Project created successfully! Invitations sent to collaborators.")
-        return redirect('myprojects')  # Redirect to the myprojects page after project creation
+        return redirect('myprojects')  
 
     return render(request, 'createproject.html')
 
