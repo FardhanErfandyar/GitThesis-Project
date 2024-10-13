@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<section class="h-100 gradient-custom-2" style="margin-top: 3rem;">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col col-lg-9 col-xl-7">
+        <div class="card">
+          <div class="rounded-top text-white d-flex flex-row" style="background: linear-gradient(to right, #1230AE, #6C48C5, #C68FE6); height:200px;">
+            <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
+              <img src="{% static 'images/profile-new.svg' %}" alt="Profile Picture" class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1; border-radius: 50%;">
+              <button type="button" class="btn btn-outline-primary" style="z-index: 1;">
+                Edit Image
+              </button>
+            </div>
+            <div class="ms-3" style="margin-top: 130px;">
+              <h5>{{ user.username }}</h5>
+              <p>{{ user.email }}</p>
+            </div>
+          </div>
+          <div class="p-4 text-black" style="background-color: #f8f9fa;">
+            <div class="d-flex justify-content-end text-center py-1">
+              <div>
+                <p class="mb-1 h5" style="color: #1230AE;">{{ projectcount }}</p> 
+                <p class="small text-muted mb-0 gradient-text-sidebar">Projects</p>
+              </div>
+              <div class="px-3">
+                <p class="mb-1 h5" style="color: #1230AE;">{{ networkscount }}</p> 
+                <p class="small text-muted mb-0 gradient-text-sidebar">Networks</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-4 text-black">
+            <div class="mb-5">
+                <p class="font-italic fst-lighter mb-1">Joined on {{ user.date_joined|date:"d M Y" }}</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <p class="lead fw-semibold gradient-text-sidebar mb-0">Owned Projects</p>
+              <p class="mb-0"><a href="/myprojects" class="text-muted thesis-font-logo">Show all</a></p>
+            </div>
+                <div class="list-group">
+                    {% for project in projects %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center mb-4 project-item">
+                            <span>{{ project.name }}</span>  <!-- Display project name -->
+                            <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary" style="background-color: #1230AE;">View Detail</a>  <!-- Link to project detail -->
+                        </div>
+                    {% empty %}
+                        <div class="list-group-item">No projects available.</div>  <!-- Message if no projects -->
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <p class="lead fw-semibold gradient-text-sidebar mb-0">Contributed Projects</p>
+                    <p class="mb-0"><a href="/myprojects" class="text-muted thesis-font-logo">Show all</a></p>
+                </div>
+                <div class="list-group">
+                    {% for contributedproject in contributedprojects %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center mb-4 project-item">
+                            <span>{{ contributedproject.name }}</span>  <!-- Display project name -->
+                            <a href="{% url 'project_detail' contributedproject.id %}" class="btn btn-secondary" style="background-color: #1230AE;">View Detail</a>  <!-- Link to project detail -->
+                        </div>
+                    {% empty %}
+                        <div class="list-group-item">No projects available.</div>  <!-- Message if no projects -->
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock content %}

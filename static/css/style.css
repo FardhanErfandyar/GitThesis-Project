@@ -6,6 +6,10 @@
     font-family: 'Poppins', sans-serif;
 }
 
+.card-social {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
 
 /* PROJECT */
 
@@ -193,6 +197,10 @@ aside {
 
 /* NAVBAR */
 
+.fw-semibold{
+    color: #000;
+}
+
 
 .thesis-font-logo {
     color: #6C48C5;
@@ -282,6 +290,7 @@ aside {
 }
 
 /* MYPROJECT */
+
 .project-item {
     border-radius: 15px !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -370,4 +379,28 @@ aside {
     padding: 10px;
     text-align: right;
     white-space: nowrap;
+}
+
+
+/* PROJECT SETTING */
+
+/* CURRENT COLLABORATOR SECTION */
+.notification-icon {
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px; /* Adjusts vertical position */
+    right: -6px; /* Adjusts horizontal position */
+    background: #C68FE6; /* Background color */
+    color: white; /* Text color */
+    border-radius: 50%; /* Makes it round */
+    padding: 2px 5px; /* Space around text */
+    font-size: 0.9rem; /* Size of the number */
+    min-width: 18px; /* Minimum width of the badge */
+    height: 18px; /* Fixed height to keep the circle consistent */
+    display: flex; /* Align items */
+    justify-content: center; /* Center the number horizontally */
+    align-items: center; /* Center the number vertically */
 }

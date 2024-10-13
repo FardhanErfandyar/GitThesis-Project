@@ -31,19 +31,41 @@
             </div>
             {% endif %}
         </div>
-
+        
         <!-- Signin Signup Button and Profile Dropdown -->
         <div class="d-flex align-items-center ms-auto me-5">
             {% if not user.is_authenticated %}
                 <button class="btn btn-outline-primary me-2" data-bs-target="#SignIn" data-bs-toggle="modal">Sign in</button>
                 <button class="btn btn-primary" data-bs-target="#SignUp" data-bs-toggle="modal">Sign Up</button>
             {% else %}
+            <div class="nav-item me-3">
+                <a class="nav-link" href="{% url 'inbox' %}">
+                    <!-- Icon Notifikasi dengan jumlah undangan -->
+                    <div class="notification-icon">
+                        {% if request.resolver_match.url_name == 'inbox' %}
+                            <!-- Ikon ketika di halaman inbox -->
+                            <img src="{% static 'images/filled_bells.svg' %}" alt="Notifications" style="width: 24px; height: 24px;">
+                        {% else %}
+                            <!-- Ikon biasa jika bukan di halaman inbox -->
+                            <img src="{% static 'images/new_bells.svg' %}" alt="Notifications" style="width: 24px; height: 24px;">
+                        {% endif %}
+                        
+                        {% if invitations_count > 0 %}
+                            <span class="notification-badge">
+                                {{ invitations_count }}
+                            </span>
+                        {% endif %}
+                    </div>                    
+                </a>
+            </div>
+                    
+
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img class="d-inline-block align-top" src="{% static 'images/profile-new.svg' %}" width="30" height="30">
+                        <img class="d-inline-block align-top" src="{% static 'images/profile-new.svg' %}" width="32" height="32">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="/profile">Profile</a></li>
                         <li><button class="dropdown-item" data-bs-target="#signOutModal" data-bs-toggle="modal">Sign Out</button></li>
                     </ul>
                 </div> 
@@ -143,9 +165,6 @@
     </div>
 </div>
 
-
-
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('loginForm').onsubmit = function(event) {
@@ -212,5 +231,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 });
-
 </script>

@@ -7,20 +7,54 @@
     <h1 class="text-center mb-4 gradient-text fw-semibold">My Projects</h1>
 
     <!-- Search Field and Button in One Row -->
-    <div class="row mb-5 justify-content-end">
+    <div class="row mb-4 justify-content-end">
         <div class="col-md-5">
             <input type="text" class="form-control" id="searchField" placeholder="Search your projects">
         </div>
         <div class="col-md-4 text-start">
-            <!-- Ubah button menjadi link yang mengarah ke halaman create_project -->
-            <a href="{% url 'createproject' %}" class="btn btn-primary">
+            <!-- Button to create a new project -->
+            <a href="{% url 'create_project' %}" class="btn btn-primary">
                 <i class="bx bx-book me-2"></i>New
             </a>
         </div>
     </div>
 
+    <!-- Filter Buttons Row -->
+    <div class="row mb-4">
+        <div class="col-md-8 offset-md-2 d-flex justify-content-start">
+            <!-- Filter by Ownership -->
+            <div class="dropdown me-2">
+                <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="ownershipFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                    Filter by Ownership
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="ownershipFilter">
+                    <li>
+                        <a class="dropdown-item" href="?filter=mine&order={{ request.GET.order }}">My Projects</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="?filter=all&order={{ request.GET.order }}">All Projects</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Filter by Order -->
+            <div class="dropdown">
+                <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="orderFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sort Projects
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="orderFilter">
+                    <li>
+                        <a class="dropdown-item" href="?filter={{ request.GET.filter }}&order=latest">Newest</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="?filter={{ request.GET.filter }}&order=oldest">Oldest</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <!-- List of Projects -->
- 
     <div class="col-md-8 offset-md-2">
         <div class="list-group">
             {% for project in projects %}
@@ -33,9 +67,6 @@
             {% endfor %}
         </div>
     </div>
-    
-    
-    
 
     <div class="modal-footer"></div>
 </div>
