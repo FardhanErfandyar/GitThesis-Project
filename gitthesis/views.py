@@ -2,7 +2,7 @@ import subprocess
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from .models import Invitation, Project, Collaborator, UserProfile, ProjectImage
+from .models import Invitation, Project, Collaborator, UserProfile, ProjectImage, Section
 from django.contrib.auth.models import User
 import os
 from django.contrib.auth import authenticate, login, logout
@@ -15,8 +15,11 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.core.files.storage import default_storage
+import json
+from django.utils.decorators import method_decorator
+from django.views import View
 
 
 def project(request):
@@ -24,7 +27,7 @@ def project(request):
 
 
 def project_detail(request, project_id):
-    project = Project.objects.get(id=project_id)
+    project = get_object_or_404(Project, id=project_id)
     images = project.images.all().order_by('-created_at') 
     return render(request, 'project.html', {'project': project, 'images': images})
 
@@ -58,8 +61,51 @@ def home(request):
 def landing(request):
     return render(request, "landing.html")
 
+@method_decorator(csrf_exempt, name="dispatch")
+class AddSectionView(View):
+    def post(self, request):
+        data = json.loads(request.body)
+        title = data.get("title")
+        project_id = data.get("project_id")  # Mengambil project_id dari request
 
-@csrf_protect  # Lindungi dari CSRF
+        # Validasi input
+        if not title:
+            return JsonResponse({"success": False, "error": "Title is required"}, status=400)
+
+        if not project_id:
+            return JsonResponse({"success": False, "error": "Project ID is required"}, status=400)
+
+        try:
+            # Dapatkan objek Project yang sesuai
+            project = Project.objects.get(id=project_id)
+
+            # Buat Section baru
+            section = Section.objects.create(project=project, title=title)
+
+            # Mengembalikan ID section yang baru dibuat
+            return JsonResponse({"success": True, "section_id": section.id}, status=201)
+        except Project.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Project not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)  # Mengembalikan kesalahan
+@method_decorator(csrf_exempt, name="dispatch")
+class UpdateSectionTitleView(View):
+    def post(self, request, section_id):
+        data = json.loads(request.body)
+        title = data.get("title")
+
+        try:
+            section = Section.objects.get(id=section_id)
+            section.title = title
+            section.save()
+            return JsonResponse({"success": True})
+        except Section.DoesNotExist:
+            return JsonResponse(
+                {"success": False, "error": "Section not found"}, status=404
+            )
+
+
+@csrf_protect 
 def upload_image(request, project_id):
     if request.method == "POST":
         # Cek jika project dengan ID yang diberikan ada

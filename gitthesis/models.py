@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Project(models.Model):
@@ -33,9 +35,10 @@ class Section(models.Model):
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name="sections"
     )
-    content = models.TextField()
+    title = models.CharField(max_length=255, default="Untitled Section") 
+    content = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True)  # Tambahkan updated_at di sini
+    updated_at = models.DateTimeField(auto_now=True)  
 
     def save_new_version(self):
         """
@@ -43,6 +46,7 @@ class Section(models.Model):
         """
         new_version = SectionVersion.objects.create(
             section=self,
+            title=self.title, 
             content=self.content,
         )
         return new_version
@@ -82,7 +86,8 @@ class SectionVersion(models.Model):
     section = models.ForeignKey(
         Section, on_delete=models.CASCADE, related_name="versions"
     )
-    content = models.TextField()
+    title = models.CharField(max_length=255, default="Untitled Section")
+    content = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -138,3 +143,33 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+@receiver(post_save, sender=Project)
+def create_default_sections(sender, instance, created, **kwargs):
+    if created:
+        # Buat section default
+        sections = [
+            {"title": "Cover", "content": "Ini adalah halaman cover"},
+            {"title": "Kata Pengantar", "content": "Ini adalah kata pengantar"},
+            {"title": "Bab 1: Pendahuluan", "content": "Ini adalah bab pendahuluan"},
+            {
+                "title": "Bab 2: Tinjauan Pustaka",
+                "content": "Ini adalah tinjauan pustaka",
+            },
+            {
+                "title": "Bab 3: Metodologi",
+                "content": "Ini adalah metodologi penelitian",
+            },
+            {"title": "Bab 4: Pembahasan", "content": "Ini adalah pembahasan"},
+            {
+                "title": "Kesimpulan dan Saran",
+                "content": "Ini adalah kesimpulan dan saran",
+            },
+        ]
+        for section_data in sections:
+            Section.objects.create(
+                project=instance,
+                title=section_data["title"],
+                content=section_data["content"],
+            )

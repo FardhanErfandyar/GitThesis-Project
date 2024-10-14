@@ -26,8 +26,8 @@ urlpatterns = [
     path('project/<int:project_id>/remove-collaborator/<int:collaborator_id>/', views.remove_collaborator, name='remove_collaborator'),
     path('upload-profile-image/', upload_profile_image, name='upload_profile_image'),
     path('project/<int:project_id>/upload_image/', upload_image, name='upload_image'),
-
-
+    path('update-section-title/<int:section_id>/', UpdateSectionTitleView.as_view(), name='update_section_title'),
+    path('add-section/', AddSectionView.as_view(), name='add_section'),
     
 ]
 
