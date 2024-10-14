@@ -19,6 +19,7 @@ urlpatterns = [
     path("logout/", custom_logout, name="logout"),
     path("myprojects/createnewproject/", create_project, name="create_project"),
     path("myprojects/project/<int:project_id>/settings/", project_settings, name="project_settings"),
+    path('project/<int:project_id>/delete/', views.delete_project, name='delete_project'),
     path('inbox/', inbox, name='inbox'),
     path('accept_invitation/<int:invitation_id>/', accept_invitation, name='accept_invitation'),
     path('reject_invitation/<int:invitation_id>/', reject_invitation, name='reject_invitation'),
