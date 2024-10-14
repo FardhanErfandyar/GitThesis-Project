@@ -13,6 +13,19 @@
 
 /* PROJECT */
 
+input[type="text"] {
+    padding: 5px; /* Ensure there's padding */
+    border: 1px solid #ced4da; /* Match Bootstrap default input border */
+    border-radius: 4px; /* Match Bootstrap input border radius */
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Smooth transition */
+}
+
+input[type="text"]:focus {
+    border-color: #80bdff; /* Bootstrap focus color */
+    outline: 0; /* Remove default outline */
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); /* Add a focus shadow */
+}
+
 .uploaded-image {
     background-color: #f7f3ff;
         border-radius: 5px;
