@@ -8,12 +8,22 @@ class Project(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owned_projects")  # Owner field
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="owned_projects"
+    )
     collaborators = models.ManyToManyField(
         User,
         through="Collaborator",
         related_name="projects",
     )
+
+    def get_all_sections_content(self):
+        """
+        Mengambil konten dari semua section dalam proyek ini.
+        """
+        sections = self.sections.all()
+        combined_content = "\n\n".join([section.content for section in sections])
+        return combined_content
 
     def __str__(self):
         return f"{self.name} (Updated: {self.updated_at})"
@@ -91,7 +101,9 @@ class ProjectImage(models.Model):
 
 
 class Collaborator(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, null=True, blank=True
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     invited_at = models.DateTimeField(default=timezone.now)
     is_accepted = models.BooleanField(default=False)
@@ -110,7 +122,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.username} on Section {self.section.id} (Created: {self.created_at})"
-    
+
 
 class Invitation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -119,9 +131,10 @@ class Invitation(models.Model):
     is_rejected = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True)
+    profile_picture = models.ImageField(upload_to="profile_pictures/", null=True)
 
     def __str__(self):
         return self.user.username
