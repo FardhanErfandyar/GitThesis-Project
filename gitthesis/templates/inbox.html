@@ -12,11 +12,11 @@
                 {% for invitation in invitations %}
                     <div class="list-group-item d-flex justify-content-between align-items-center mb-4">
                         <span>You have been invited to join the project: <strong>{{ invitation.project.name }}</strong></span>
-                        <div>
-                            <a href="{% url 'accept_invitation' invitation.id %}" class="btn btn-success me-2">Accept</a>
-                            <a href="{% url 'reject_invitation' invitation.id %}" class="btn btn-danger">Reject</a>
+                        <div class="d-flex">
+                            <a href="{% url 'accept_invitation' invitation.id %}" class="btn btn-success me-2" style="white-space: nowrap;">Accept</a>
+                            <a href="{% url 'reject_invitation' invitation.id %}" class="btn btn-danger" style="white-space: nowrap;">Reject</a>
                         </div>
-                    </div>
+                    </div>  
                 {% endfor %}
             {% else %}
                 <div class="list-group-item">No invitations found.</div>  <!-- Message if no invitations -->

@@ -17,10 +17,7 @@
                 <button type="button" class="btn btn-outline-primary btn-sm" style="z-index: 1;" onclick="selectImage();">
                     Update Image
                 </button>
-            
-                {% for message in messages %}
-                    <div class="alert alert-info">{{ message }}</div>
-                {% endfor %}
+
             </div>
             
             <div class="ms-3" style="margin-top: 130px;">
@@ -51,11 +48,11 @@
                 <div class="list-group">
                     {% for project in projects %}
                         <div class="list-group-item d-flex justify-content-between align-items-center mb-4 project-item">
-                            <span>{{ project.name }}</span>  <!-- Display project name -->
-                            <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary" style="background-color: #1230AE;">View Detail</a>  <!-- Link to project detail -->
+                            <span class="project-name">{{ project.name }}</span>  
+                            <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary view-detail-btn" style="background-color: #1230AE;">View Detail</a>  
                         </div>
                     {% empty %}
-                        <div class="list-group-item">No projects available.</div>  <!-- Message if no projects -->
+                        <div class="list-group-item">No projects available.</div>  
                     {% endfor %}
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -65,13 +62,14 @@
                 <div class="list-group">
                     {% for contributedproject in contributedprojects %}
                         <div class="list-group-item d-flex justify-content-between align-items-center mb-4 project-item">
-                            <span>{{ contributedproject.name }}</span>  <!-- Display project name -->
-                            <a href="{% url 'project_detail' contributedproject.id %}" class="btn btn-secondary" style="background-color: #1230AE;">View Detail</a>  <!-- Link to project detail -->
+                            <span class="project-name">{{ contributedproject.name }}</span>  
+                            <a href="{% url 'project_detail' contributedproject.id %}" class="btn btn-secondary view-detail-btn" style="background-color: #1230AE;">View Detail</a>  
                         </div>
                     {% empty %}
-                        <div class="list-group-item">No projects available.</div>  <!-- Message if no projects -->
+                        <div class="list-group-item">No projects available.</div>  
                     {% endfor %}
                 </div>
+             
             </div>
         </div>
       </div>
