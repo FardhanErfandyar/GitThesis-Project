@@ -186,6 +186,19 @@ def reject_invitation(request, invitation_id):
 
 
 @login_required
+def delete_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    if request.user != project.owner:
+        return HttpResponseForbidden("You are not allowed to delete this project.")
+
+    project.delete()
+    messages.success(request, "Project has been deleted successfully.")
+
+    return redirect("myprojects")
+
+
+@login_required
 def project_settings(request, project_id):
     project = get_object_or_404(Project, id=project_id)
 
