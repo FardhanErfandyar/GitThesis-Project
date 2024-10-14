@@ -13,6 +13,12 @@
 
 /* PROJECT */
 
+.uploaded-image {
+    background-color: #f7f3ff;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .container-project {
     margin-top: 5.5rem;
     display: flex;

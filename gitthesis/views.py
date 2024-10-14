@@ -2,7 +2,7 @@ import subprocess
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from .models import Invitation, Project, Collaborator, UserProfile
+from .models import Invitation, Project, Collaborator, UserProfile, ProjectImage
 from django.contrib.auth.models import User
 import os
 from django.contrib.auth import authenticate, login, logout
@@ -15,6 +15,8 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_protect
+from django.core.files.storage import default_storage
 
 
 def project(request):
@@ -22,8 +24,9 @@ def project(request):
 
 
 def project_detail(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    return render(request, "project.html", {"project": project})
+    project = Project.objects.get(id=project_id)
+    images = project.images.all().order_by('-created_at') 
+    return render(request, 'project.html', {'project': project, 'images': images})
 
 
 def home(request):
@@ -54,6 +57,46 @@ def home(request):
 
 def landing(request):
     return render(request, "landing.html")
+
+
+@csrf_protect  # Lindungi dari CSRF
+def upload_image(request, project_id):
+    if request.method == "POST":
+        # Cek jika project dengan ID yang diberikan ada
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            return JsonResponse(
+                {"success": False, "message": "Project not found"}, status=404
+            )
+
+        if "image" in request.FILES:
+            image = request.FILES["image"]
+
+            # Ambil ekstensi file
+            ext = os.path.splitext(image.name)[1]
+
+            # Buat nama file yang unik
+            timestamp = timezone.now().strftime("%Y%m%d%H%M%S")  # Format timestamp
+            unique_filename = f"project_{project_id}_{timestamp}{ext}"
+
+            # Simpan file image dengan nama unik
+            file_name = default_storage.save(f"project_images/{unique_filename}", image)
+
+            # Simpan data ke database
+            ProjectImage.objects.create(project=project, image=file_name)
+
+            return JsonResponse(
+                {"success": True, "message": "Image uploaded successfully"}
+            )
+        else:
+            return JsonResponse(
+                {"success": False, "message": "No image file provided"}, status=400
+            )
+
+    return JsonResponse(
+        {"success": False, "message": "Invalid request method"}, status=405
+    )
 
 
 @login_required

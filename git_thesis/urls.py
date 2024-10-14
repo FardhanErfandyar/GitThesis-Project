@@ -25,6 +25,7 @@ urlpatterns = [
     path('reject_invitation/<int:invitation_id>/', reject_invitation, name='reject_invitation'),
     path('project/<int:project_id>/remove-collaborator/<int:collaborator_id>/', views.remove_collaborator, name='remove_collaborator'),
     path('upload-profile-image/', upload_profile_image, name='upload_profile_image'),
+    path('project/<int:project_id>/upload_image/', upload_image, name='upload_image'),
 
 
     
