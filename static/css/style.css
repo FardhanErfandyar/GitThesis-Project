@@ -197,7 +197,7 @@ aside {
 
 /* NAVBAR */
 
-.fw-semibold{
+.fw-semibold {
     color: #000;
 }
 
@@ -290,6 +290,27 @@ aside {
 }
 
 /* MYPROJECT */
+
+.project-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.project-name {
+    flex-grow: 1;
+    margin-right: 10px;
+    /* Beri jarak antara nama proyek dan tombol */
+}
+
+.view-detail-btn {
+    white-space: nowrap;
+    /* Pastikan tombol tetap pada satu baris */
+    height: auto;
+    /* Sesuaikan tinggi tombol secara otomatis */
+    flex-shrink: 0;
+    /* Pastikan tombol tidak mengecil saat teks proyek panjang */
+}
 
 .project-item {
     border-radius: 15px !important;
@@ -391,16 +412,28 @@ aside {
 
 .notification-badge {
     position: absolute;
-    top: -5px; /* Adjusts vertical position */
-    right: -6px; /* Adjusts horizontal position */
-    background: #C68FE6; /* Background color */
-    color: white; /* Text color */
-    border-radius: 50%; /* Makes it round */
-    padding: 2px 5px; /* Space around text */
-    font-size: 0.9rem; /* Size of the number */
-    min-width: 18px; /* Minimum width of the badge */
-    height: 18px; /* Fixed height to keep the circle consistent */
-    display: flex; /* Align items */
-    justify-content: center; /* Center the number horizontally */
-    align-items: center; /* Center the number vertically */
+    top: -5px;
+    /* Adjusts vertical position */
+    right: -6px;
+    /* Adjusts horizontal position */
+    background: #C68FE6;
+    /* Background color */
+    color: white;
+    /* Text color */
+    border-radius: 50%;
+    /* Makes it round */
+    padding: 2px 5px;
+    /* Space around text */
+    font-size: 0.9rem;
+    /* Size of the number */
+    min-width: 18px;
+    /* Minimum width of the badge */
+    height: 18px;
+    /* Fixed height to keep the circle consistent */
+    display: flex;
+    /* Align items */
+    justify-content: center;
+    /* Center the number horizontally */
+    align-items: center;
+    /* Center the number vertically */
 }
