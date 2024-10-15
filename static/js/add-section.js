@@ -59,6 +59,18 @@ function addSection() {
     const listContainer = document.querySelector(".list-unstyled");
     listContainer.appendChild(newSectionInput);
     listContainer.appendChild(saveButton);
+
+    // Tampilkan tombol "Cancel" setelah klik "Add Section"
+    const cancelButton = document.getElementById("cancelSection");
+    if (cancelButton) {
+        cancelButton.style.display = "inline-block";
+    }
+
+    // Sembunyikan tombol "Add Section" saat section baru ditambahkan
+    const addSectionButton = document.querySelector(".btn-primary.btn-sm.mt-1.mb-1");
+    if (addSectionButton) {
+        addSectionButton.style.display = "none";
+    }
 }
 
 // Fungsi untuk mengambil CSRF token dari cookie
@@ -76,4 +88,31 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+// cancel add section
+function cancelAddSection() {
+    // Hapus elemen input untuk judul section baru dan tombol "Add"
+    const newSectionInput = document.querySelector(".list-unstyled input.form-control.mt-2");
+    const saveButton = document.querySelector(".list-unstyled button.btn.btn-primary.mt-2");
+
+    if (newSectionInput) {
+        newSectionInput.remove();
+    }
+
+    if (saveButton) {
+        saveButton.remove();
+    }
+
+    // Sembunyikan tombol "Cancel" setelah cancel
+    const cancelButton = document.getElementById('cancelSection');
+    if (cancelButton) {
+        cancelButton.style.display = 'none';
+    }
+    
+    // Tampilkan tombol "Add Section" kembali jika dibutuhkan
+    const addSectionButton = document.querySelector(".btn-primary.btn-sm.mt-1.mb-1");
+    if (addSectionButton) {
+        addSectionButton.style.display = 'inline-block';
+    }
 }
