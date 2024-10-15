@@ -14,10 +14,10 @@
             <!-- Button to add a new section -->
             <div>
                 <input type="hidden" id="project-id" value="{{ project.id }}">
-                <button class="nav-item btn btn-primary btn-sm mt-1 mb-1" onclick="addSection()">+ Section</button>
+                <button class="nav-item btn btn-primary btn-sm mt-1 mb-1" onclick="addSection()">Add Section</button>
                 <button id="cancelSection" class="nav-item btn btn-outline-primary btn-sm mt-1 mb-1" style="display:none" onclick="cancelAddSection()">Cancel</button>
                 <!-- Single delete button to show minus icons -->
-                <button id="deleteSelected" class="nav-item btn btn-danger btn-sm mb-1" onclick="toggleDeleteIcons()">Delete Section</button>
+                <button id="deleteSelected" class="nav-item btn btn-danger btn-sm mt-1 mb-1" onclick="toggleDeleteIcons()">Delete Section</button>
                 <ul class="list-unstyled mb-3">
                     {% for section in project.sections.all %}
                         <li id="section-{{ section.id }}" class="d-flex justify-content-between align-items-center">
@@ -44,7 +44,7 @@
                     <li class="image-upload-item">
                         <button id="custom-upload-button" class="nav-item pt-1 text-light pb-1 btn btn-primary btn-sm btn-fit fw-medium" 
                                 data-upload-url="{% url 'upload_image' project.id %}">
-                            + Image
+                            Add Image
                         </button>
 
                         <input type="file" id="image-upload" accept="image/*" style="display:none;" />
@@ -55,10 +55,13 @@
                                     <div class="uploaded-image rounded p-2 mb-3" id="image-{{ image.id }}">
                                         <img src="{{ image.image.url }}" alt="{{ image.image.name }}" class="img-fluid">
                                         <p class="mt-2" style="word-wrap: break-word;">{{ image.image.name }}</p>
-                                        <button class="btn btn-danger btn-sm mt-1" onclick="deleteImage('{{ image.id }}')">Delete</button>
+                                        <button class="btn btn-outline-danger btn-sm mt-1" onclick="deleteImage('{{ image.id }}')">Delete</button>
                                     </div>
                                 {% empty %}
-                                    <p>No images uploaded yet.</p>
+                                <div class="uploaded-image rounded p-2 mb-3" id="placeholder-image">
+                                    <img src="{% static 'images/placeholder.png' %}" alt="No images uploaded" class="img-fluid">
+                                    <p class="mt-2" style="word-wrap: break-word;">No images uploaded yet.</p>
+                                </div>
                                 {% endfor %}
                             </div>
                     </li>

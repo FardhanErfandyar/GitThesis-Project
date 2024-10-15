@@ -161,6 +161,9 @@ def delete_image(request, image_id):
     
     # Menghapus gambar dari database
     image.delete()
+    image_path = image.image.path
+    if os.path.exists(image_path):
+        os.remove(image_path)
     
     # Mengembalikan respons sukses
     return JsonResponse({'status': 'success'}, status=200)
@@ -169,12 +172,21 @@ def delete_image(request, image_id):
 @login_required
 def profile(request):
     projects = Project.objects.filter(owner=request.user)[:3]
-    Contributedprojects = Project.objects.filter(collaborators=request.user)[:3]
+    Contributedprojects = Project.objects.filter(collaborators=request.user).exclude(owner=request.user)[:3]
 
     all_projects = Project.objects.filter(owner=request.user)
     all_contributed_projects = Project.objects.filter(collaborators=request.user)
 
     projectcount = all_projects.union(all_contributed_projects).count()
+
+    networks = (
+    User.objects.filter(
+        Q(owned_projects__in=projects) & Q(collaborator__is_accepted=True)  # Pemilik proyek yang menerima user sebagai collaborator
+        | Q(collaborator__project__in=projects, collaborator__is_accepted=True)  # Kolaborator di proyek user
+    )
+    .exclude(id=request.user.id)  # Mengecualikan user auth
+    .distinct()
+    )
 
     networks = (
         User.objects.filter(
