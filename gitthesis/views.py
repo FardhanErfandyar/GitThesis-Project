@@ -20,6 +20,7 @@ from django.core.files.storage import default_storage
 import json
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.http import require_http_methods
 
 
 def project(request):
@@ -143,6 +144,26 @@ def upload_image(request, project_id):
     return JsonResponse(
         {"success": False, "message": "Invalid request method"}, status=405
     )
+
+@login_required
+@require_http_methods(["DELETE"])
+def delete_section(request, section_id):
+    section = get_object_or_404(Section, id=section_id)
+    section.delete()
+    return JsonResponse({'status': 'success'}, status=200)
+
+
+@login_required
+@require_http_methods(["DELETE"])
+def delete_image(request, image_id):
+    # Mencari gambar berdasarkan ID
+    image = get_object_or_404(ProjectImage, id=image_id)
+    
+    # Menghapus gambar dari database
+    image.delete()
+    
+    # Mengembalikan respons sukses
+    return JsonResponse({'status': 'success'}, status=200)
 
 
 @login_required

@@ -50,7 +50,7 @@
         {% for collaboratorAccepted in collaboratorsAccepted %}
         <div class="list-group-item d-flex justify-content-between align-items-center mb-2 collaborator-item" style="border-top: 1px solid #ddd;">
             <div class="d-flex align-items-center">
-                <img src="" alt="{{ collaboratorAccepted.user.username }}'s avatar" class="collaborator-avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                <img src="{{ collaboratorAccepted.user.profile_picture.url }}" alt="{{ collaboratorAccepted.user.username }}'s avatar" class="collaborator-avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
                 <div>
                     <strong>{{ collaboratorAccepted.user.username }}</strong>
                     {% if collaboratorAccepted.user == project.owner %}
