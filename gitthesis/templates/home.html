@@ -51,7 +51,9 @@
       <div class="card mb-3 card-social border-0" style="max-width: 100%;">
         <div class="row g-0">
           <div class="col-md-2 d-flex align-items-center justify-content-center">
-            <img src="{% static 'images/profile-new.svg' %}" class="img-fluid rounded-start" alt="Profile Icon" style="width: 60px; height: 60px;">
+            <img class="rounded-circle ms-2" 
+              src="{% if invitation.project.owner.userprofile.profile_picture %}{{ invitation.project.owner.userprofile.profile_picture.url }}{% else %}{% static 'images/profile-new.svg' %}{% endif %}" 
+              width="70px" height="70px" alt="Profile Picture">
           </div>
           <div class="col-md-10">
             <div class="card-body">
