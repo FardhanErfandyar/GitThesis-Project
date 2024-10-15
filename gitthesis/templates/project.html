@@ -11,23 +11,32 @@
             <div class="col-md-2 sidebar-left">
                 <h5 class="gradient-text-sidebar fw-semibold">Struktur Dokumen</h5>
 
-                <!-- Button to add a new section -->
-                <div>
-                    <input type="hidden" id="project-id" value="{{ project.id }}">
-                    <button class="nav-item btn btn-primary btn-sm mt-1 mb-1" onclick="addSection()">+ Section</button>
-                    <ul class="list-unstyled mb-3">
-                        {% for section in project.sections.all %}
-                            <li>
-                                <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
-                                   href="#{{ section.title|slugify }}-{{ section.id }}"
-                                   ondblclick="editTitle(this, '{{ section.id }}')">
-                                    {{ section.title }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                
+            <!-- Button to add a new section -->
+            <div>
+                <input type="hidden" id="project-id" value="{{ project.id }}">
+                <button class="nav-item btn btn-primary btn-sm mt-1 mb-1" onclick="addSection()">+ Section</button>
+                <button id="cancelSection" class="nav-item btn btn-outline-primary btn-sm mt-1 mb-1" style="display:none" onclick="cancelAddSection()">Cancel</button>
+                <!-- Single delete button to show minus icons -->
+                <button id="deleteSelected" class="nav-item btn btn-danger btn-sm mb-1" onclick="toggleDeleteIcons()">Delete Section</button>
+                <ul class="list-unstyled mb-3">
+                    {% for section in project.sections.all %}
+                        <li id="section-{{ section.id }}" class="d-flex justify-content-between align-items-center">
+                            <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
+                            href="#{{ section.title|slugify }}-{{ section.id }}"
+                            ondblclick="editTitle(this, '{{ section.id }}')">
+                            {{ section.title }}
+                            </a>
+                            <!-- Minus icon for deletion -->
+                            <img id="checkbox-{{ section.id }}" src="{% static 'images/minus.png' %}"
+                                alt="Select" class="section-checkbox" 
+                                style="cursor: pointer; margin-left: 10px; display: none; width: 15px; height: 15px;" 
+                                onclick="confirmDelete('{{ section.id }}')">
+                        </li>
+                    {% empty %}
+                        <li>No sections available.</li>
+                    {% endfor %}
+                </ul>
+            </div>
 
                 <h5 class="gradient-text-sidebar fw-semibold">Images</h5>
 
@@ -43,9 +52,10 @@
                     <li>
                             <div id="uploaded-images" class="mt-3">
                                 {% for image in images %}
-                                    <div class="uploaded-image rounded p-2 mb-3">
+                                    <div class="uploaded-image rounded p-2 mb-3" id="image-{{ image.id }}">
                                         <img src="{{ image.image.url }}" alt="{{ image.image.name }}" class="img-fluid">
                                         <p class="mt-2" style="word-wrap: break-word;">{{ image.image.name }}</p>
+                                        <button class="btn btn-danger btn-sm mt-1" onclick="deleteImage('{{ image.id }}')">Delete</button>
                                     </div>
                                 {% empty %}
                                     <p>No images uploaded yet.</p>
@@ -60,7 +70,7 @@
             <!-- Overview dokumen di tengah -->
             <div class="col-md-8 col-lg-8">
                 <div class="document">
-                    <h4 class="text-center mb-2 gradient-text-sidebar fw-semibold">{{project.name}}</h4>
+                    <h4 class="text-center mb-2 gradient-text-sidebar fw-semibold">{{ project.name }}</h4>
                         {% if project.owner == user %}
                             <div class="text-end mt-2">
                                 <a href="{% url 'project_settings' project.id %}" class="btn btn-primary btn-sm gradient-text-sidebar">Project Settings</a>
@@ -148,5 +158,12 @@
 
     {% comment %} Add Section {% endcomment %}
     <script src="{% static 'js/add-section.js' %}"></script>
+
+    {% comment %} Delete Section {% endcomment %}
+    <script src="{% static 'js/delete-section.js' %}"></script>
+
+    {% comment %} Delete Image {% endcomment %}
+    <script src="{% static 'js/delete-image.js' %}"></script>
+
 
 {% endblock %}

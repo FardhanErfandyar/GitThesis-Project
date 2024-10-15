@@ -348,22 +348,22 @@ aside {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
+    flex-wrap: wrap; /* Allow wrapping for both text and button */
 }
 
 .project-name {
-    flex-grow: 1;
-    margin-right: 10px;
-    /* Beri jarak antara nama proyek dan tombol */
+    flex: 1; /* Allow the project name to take available space */
+    word-break: break-word; /* Break long words to wrap to the next line */
+    white-space: normal; /* Ensure the text wraps properly */
+    overflow-wrap: break-word; /* Ensure long strings without spaces also wrap */
 }
 
 .view-detail-btn {
-    white-space: nowrap;
-    /* Pastikan tombol tetap pada satu baris */
-    height: auto;
-    /* Sesuaikan tinggi tombol secara otomatis */
-    flex-shrink: 0;
-    /* Pastikan tombol tidak mengecil saat teks proyek panjang */
+    flex-shrink: 0; /* Ensure the button stays the same size and doesn't shrink */
+    white-space: nowrap; /* Prevent the button text from wrapping */
 }
+
 
 .project-item {
     border-radius: 15px !important;
@@ -490,3 +490,4 @@ aside {
     align-items: center;
     /* Center the number vertically */
 }
+
