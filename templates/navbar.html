@@ -1,5 +1,5 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-shadow fixed-top py-3" style="background-color: #ffffff;">
+<nav class="navbar navbar-expand-lg navbar-shadow fixed-top {% if not user.is_authenticated %}py-4{% endif %}" style="background-color: #ffffff;">
     <div class="container-fluid">
         <!-- Offcanvas toggle button -->
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,7 @@
             </div>
             {% if user.is_authenticated %}
             <div class="offcanvas-body">
-                <ul class="navbar-nav ms-10 justify-content-end flex-grow-1 pe-3">
+                <ul class="navbar-nav ms-10 justify-content-end flex-grow-1">
                     <li class="nav-item">
                         <a class="nav-link nav-link-hover fw-semibold {% if request.path == '/home/' %}active{% endif %}" aria-current="page" href="/home">Home</a>
                     </li>
@@ -38,39 +38,43 @@
                 <button class="btn btn-outline-primary me-2" data-bs-target="#SignIn" data-bs-toggle="modal">Sign in</button>
                 <button class="btn btn-primary" data-bs-target="#SignUp" data-bs-toggle="modal">Sign Up</button>
             {% else %}
-            <div class="nav-item me-3">
-                <a class="nav-link" href="{% url 'inbox' %}">
-                    <!-- Icon Notifikasi dengan jumlah undangan -->
-                    <div class="notification-icon">
+            <div class="d-flex align-items-center nav-item px-2 py-2">
+                <!-- Notifications Icon with Rectangle -->
+                <a class="nav-link notification-container me-3" href="{% url 'inbox' %}">
+                    <div class="notification-icon position-relative px-3 py-2">
                         {% if request.resolver_match.url_name == 'inbox' %}
-                            <!-- Ikon ketika di halaman inbox -->
                             <img src="{% static 'images/filled_bells.svg' %}" alt="Notifications" style="width: 24px; height: 24px;">
                         {% else %}
-                            <!-- Ikon biasa jika bukan di halaman inbox -->
                             <img src="{% static 'images/new_bells.svg' %}" alt="Notifications" style="width: 24px; height: 24px;">
                         {% endif %}
-                        
                         {% if invitations_count > 0 %}
                             <span class="notification-badge">
                                 {{ invitations_count }}
                             </span>
                         {% endif %}
-                    </div>                    
+                    </div>
                 </a>
-            </div>
-                    
-
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img class="d-inline-block align-top" src="{% static 'images/profile-new.svg' %}" width="32" height="32">
+        
+                <!-- Profile Dropdown -->
+                <div class="nav-item dropdown profile-section">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <!-- User Profile Picture -->
+                        <img class="rounded-circle me-2" 
+                             src="{% if user.userprofile.profile_picture %}{{ user.userprofile.profile_picture.url }}{% else %}{% static 'images/profile-new.svg' %}{% endif %}" 
+                             width="32" height="32" alt="Profile Picture">
+        
+                        <!-- Username -->
+                        <span class="fw-semibold">{{ user.username }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="/profile">Profile</a></li>
                         <li><button class="dropdown-item" data-bs-target="#signOutModal" data-bs-toggle="modal">Sign Out</button></li>
                     </ul>
-                </div> 
+                </div>
+            </div>
             {% endif %}
         </div>
+        
     </div>
 </nav>
 
