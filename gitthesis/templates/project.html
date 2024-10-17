@@ -58,8 +58,7 @@
                                         <button class="btn btn-outline-danger btn-sm mt-1" onclick="deleteImage('{{ image.id }}')">Delete</button>
                                     </div>
                                 {% empty %}
-                                <div class="uploaded-image rounded p-2 mb-3" id="placeholder-image">
-                                    <img src="{% static 'images/placeholder.png' %}" alt="No images uploaded" class="img-fluid">
+                                <div class="uploaded-image rounded mb-3" id="placeholder-image">
                                     <p class="mt-2" style="word-wrap: break-word;">No images uploaded yet.</p>
                                 </div>
                                 {% endfor %}
