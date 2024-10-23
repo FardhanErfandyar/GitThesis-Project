@@ -37,8 +37,12 @@ class Section(models.Model):
     )
     title = models.CharField(max_length=255, default="Untitled Section") 
     content = models.TextField(null=True, blank=True)
+    position = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)  
+
+    class Meta:
+        ordering = ['position']
 
     def save_new_version(self):
         """
@@ -153,23 +157,21 @@ def create_default_sections(sender, instance, created, **kwargs):
             {"title": "Cover", "content": "Ini adalah halaman cover"},
             {"title": "Kata Pengantar", "content": "Ini adalah kata pengantar"},
             {"title": "Bab 1: Pendahuluan", "content": "Ini adalah bab pendahuluan"},
-            {
-                "title": "Bab 2: Tinjauan Pustaka",
-                "content": "Ini adalah tinjauan pustaka",
-            },
-            {
-                "title": "Bab 3: Metodologi",
-                "content": "Ini adalah metodologi penelitian",
-            },
+            {"title": "Bab 2: Tinjauan Pustaka", "content": "Ini adalah tinjauan pustaka"},
+            {"title": "Bab 3: Metodologi", "content": "Ini adalah metodologi penelitian"},
             {"title": "Bab 4: Pembahasan", "content": "Ini adalah pembahasan"},
-            {
-                "title": "Kesimpulan dan Saran",
-                "content": "Ini adalah kesimpulan dan saran",
-            },
+            {"title": "Kesimpulan dan Saran", "content": "Ini adalah kesimpulan dan saran"},
         ]
+
+        # Mengatur posisi awal
+        position = 0
+
+        # Buat setiap section dengan position bertambah secara otomatis
         for section_data in sections:
             Section.objects.create(
                 project=instance,
                 title=section_data["title"],
                 content=section_data["content"],
+                position=position
             )
+            position += 1  # Naikkan posisi untuk section berikutnya

@@ -11,32 +11,35 @@
             <div class="col-md-2 sidebar-left">
                 <h5 class="gradient-text-sidebar fw-semibold">Struktur Dokumen</h5>
 
-            <!-- Button to add a new section -->
-            <div>
-                <input type="hidden" id="project-id" value="{{ project.id }}">
-                <button class="nav-item btn btn-primary btn-sm mt-1 mb-1" onclick="addSection()">Add Section</button>
-                <button id="cancelSection" class="nav-item btn btn-outline-primary btn-sm mt-1 mb-1" style="display:none" onclick="cancelAddSection()">Cancel</button>
-                <!-- Single delete button to show minus icons -->
-                <button id="deleteSelected" class="nav-item btn btn-danger btn-sm mt-1 mb-1" onclick="toggleDeleteIcons()">Delete Section</button>
-                <ul class="list-unstyled mb-3">
-                    {% for section in project.sections.all %}
-                        <li id="section-{{ section.id }}" class="d-flex justify-content-between align-items-center">
-                            <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
-                            href="#{{ section.title|slugify }}-{{ section.id }}"
-                            ondblclick="editTitle(this, '{{ section.id }}')">
-                            {{ section.title }}
-                            </a>
-                            <!-- Minus icon for deletion -->
-                            <img id="checkbox-{{ section.id }}" src="{% static 'images/minus.png' %}"
-                                alt="Select" class="section-checkbox" 
-                                style="cursor: pointer; margin-left: 10px; display: none; width: 15px; height: 15px;" 
-                                onclick="confirmDelete('{{ section.id }}')">
-                        </li>
-                    {% empty %}
-                        <li>No sections available.</li>
-                    {% endfor %}
-                </ul>
-            </div>
+                <!-- Button to add a new section -->
+                <div>
+                    <input type="hidden" id="project-id" value="{{ project.id }}">
+                    <button class="nav-item btn btn-primary btn-sm mt-1 mb-1" onclick="addSection()">Add Section</button>
+                    <button id="cancelSection" class="nav-item btn btn-outline-primary btn-sm mt-1 mb-1" style="display:none" onclick="cancelAddSection()">Cancel</button>
+                    <!-- Single delete button to show minus icons -->
+                    <button id="deleteSelected" class="nav-item btn btn-danger btn-sm mt-1 mb-1" onclick="toggleDeleteIcons()">Delete Section</button>
+
+                    <ul id="section-list" class="list-unstyled mb-3">
+                        {% for section in project.sections.all %}
+                            <li id="section-{{ section.id }}" class="d-flex justify-content-between align-items-center">
+                                <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
+                                href="#{{ section.title|slugify }}-{{ section.id }}"
+                                ondblclick="editTitle(this, '{{ section.id }}')">
+                                {{ section.title }}
+                                </a>
+                                <img id="checkbox-{{ section.id }}" src="{% static 'images/minus.png' %}"
+                                    alt="Select" class="section-checkbox" 
+                                    style="cursor: pointer; margin-left: 10px; display: none; width: 15px; height: 15px;" 
+                                    onclick="confirmDelete('{{ section.id }}')">
+                            </li>
+                        {% empty %}
+                            <li>No sections available.</li>
+                        {% endfor %}
+                    </ul>
+                    
+
+                    <button id="update-position-btn" class="nav-item btn btn-outline-primary btn-sm mt-1 mb-1" type="button">Update Position</button>
+                </div>
 
                 <h5 class="gradient-text-sidebar fw-semibold">Images</h5>
 
@@ -166,6 +169,10 @@
 
     {% comment %} Delete Image {% endcomment %}
     <script src="{% static 'js/delete-image.js' %}"></script>
+
+    {% comment %} sort-table {% endcomment %}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="{% static 'js/sort-section.js' %}"></script>
 
 
 {% endblock %}
