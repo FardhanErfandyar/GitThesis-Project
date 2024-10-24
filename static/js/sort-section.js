@@ -3,6 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
         animation: 150,
         onEnd: function (evt) {
             console.log("Section order changed. Click 'Update Position' to save changes.");
+            
+            // Update data-position attributes after drag
+            const sections = document.querySelectorAll('li.section-query[id^="section-"]');
+            sections.forEach((section, index) => {
+                // Index + 1 karena position dimulai dari 1, bukan 0
+                section.setAttribute('data-position', index + 1);
+                console.log(`Updated ${section.id} position to ${index + 1}`);
+            });
         }
     });
 

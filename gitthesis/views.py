@@ -31,7 +31,8 @@ def project(request):
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     images = project.images.all().order_by('-created_at') 
-    return render(request, 'project.html', {'project': project, 'images': images})
+    sections = project.sections.all().order_by('position') 
+    return render(request, 'project.html', {'project': project, 'images': images, 'sections': sections})
 
 
 def home(request):
@@ -70,8 +71,8 @@ def update_section_order(request, project_id):
         sections = data.get('sections', [])
         
         for section_data in sections:
-            section_id = section_data.get('section_id')
-            new_position = section_data.get('new_position')
+            section_id = section_data.get('id')
+            new_position = section_data.get('position')
             
             if section_id and new_position:
                 section = Section.objects.get(id=section_id)
