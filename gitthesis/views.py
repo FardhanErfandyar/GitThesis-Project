@@ -63,19 +63,32 @@ def home(request):
 def landing(request):
     return render(request, "landing.html")
 
-@csrf_exempt  # Gunakan hanya untuk debugging
+@csrf_exempt  # Only use this if necessary (for debugging or non-logged in user requests)
 def update_section_order(request, project_id):
     if request.method == 'POST':
-        project = Project.objects.get(id=project_id)
-        order = request.POST.getlist('order[]')  # atau json.loads(request.body) jika format JSON
-        if order:
-            for index, section_id in enumerate(order):
-                section = Section.objects.get(id=section_id)
-                section.position = index
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Project not found'}, status=404)
+
+        data = json.loads(request.body)
+        order = data.get('order')
+
+        if not order:
+            return JsonResponse({'success': False, 'error': 'Invalid data provided'}, status=400)
+
+        for index, section_id in enumerate(order):
+            try:
+                section = Section.objects.get(id=section_id, project=project)
+                section.order = index  # Update the section order
                 section.save()
-            return JsonResponse({'success': True})
-        return JsonResponse({'success': False, 'error': 'Invalid order data'})
-    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+            except Section.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Section not found'}, status=404)
+
+        return JsonResponse({'success': True})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @method_decorator(csrf_exempt, name="dispatch")
 class AddSectionView(View):
