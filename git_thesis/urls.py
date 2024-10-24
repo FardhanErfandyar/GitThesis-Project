@@ -29,6 +29,7 @@ urlpatterns = [
     path('update-section-title/<int:section_id>/', UpdateSectionTitleView.as_view(), name='update_section_title'),
     path('add-section/', AddSectionView.as_view(), name='add_section'),
     path('delete-section/<int:section_id>/', views.delete_section, name='delete_section'),
+    path('project/<int:project_id>/update-section-order/', update_section_order, name='update_section_order'),
     path('delete-image/<int:image_id>/', views.delete_image, name='delete_image'),
     
 ]

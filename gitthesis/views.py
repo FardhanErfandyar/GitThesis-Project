@@ -21,6 +21,7 @@ import json
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.http import require_http_methods
+from django.db import models
 
 
 def project(request):
@@ -30,7 +31,8 @@ def project(request):
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     images = project.images.all().order_by('-created_at') 
-    return render(request, 'project.html', {'project': project, 'images': images})
+    sections = project.sections.all().order_by('position') 
+    return render(request, 'project.html', {'project': project, 'images': images, 'sections': sections})
 
 
 def home(request):
@@ -62,6 +64,26 @@ def home(request):
 def landing(request):
     return render(request, "landing.html")
 
+@csrf_exempt  # Only use this if necessary (for debugging or non-logged in user requests)
+def update_section_order(request, project_id):
+    try:
+        data = json.loads(request.body)
+        sections = data.get('sections', [])
+        
+        for section_data in sections:
+            section_id = section_data.get('id')
+            new_position = section_data.get('position')
+            
+            if section_id and new_position:
+                section = Section.objects.get(id=section_id)
+                section.position = new_position
+                section.save()
+        
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class AddSectionView(View):
     def post(self, request):
@@ -80,15 +102,26 @@ class AddSectionView(View):
             # Dapatkan objek Project yang sesuai
             project = Project.objects.get(id=project_id)
 
-            # Buat Section baru
-            section = Section.objects.create(project=project, title=title)
+            # Cari nilai position terbesar pada project tersebut
+            max_position = project.sections.aggregate(max_position=models.Max('position'))['max_position']
+            print(f"Max position for project {project_id}: {max_position}")  # Debugging log
+
+            if max_position is None:
+                max_position = 0  # Jika tidak ada section, mulai dari 0
+            else:
+                max_position += 1  # Tambah 1 dari nilai position terbesar
+
+            # Buat Section baru dengan position baru
+            section = Section.objects.create(project=project, title=title, position=max_position)
 
             # Mengembalikan ID section yang baru dibuat
-            return JsonResponse({"success": True, "section_id": section.id}, status=201)
+            return JsonResponse({"success": True, "section_id": section.id, "position": section.position}, status=201)
         except Project.DoesNotExist:
             return JsonResponse({"success": False, "error": "Project not found"}, status=404)
         except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)}, status=500)  # Mengembalikan kesalahan
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+ 
+        
 @method_decorator(csrf_exempt, name="dispatch")
 class UpdateSectionTitleView(View):
     def post(self, request, section_id):
