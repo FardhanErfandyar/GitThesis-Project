@@ -65,29 +65,22 @@ def landing(request):
 
 @csrf_exempt  # Only use this if necessary (for debugging or non-logged in user requests)
 def update_section_order(request, project_id):
-    if request.method == 'POST':
-        try:
-            project = Project.objects.get(id=project_id)
-        except Project.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Project not found'}, status=404)
-
+    try:
         data = json.loads(request.body)
-        order = data.get('order')
-
-        if not order:
-            return JsonResponse({'success': False, 'error': 'Invalid data provided'}, status=400)
-
-        for index, section_id in enumerate(order):
-            try:
-                section = Section.objects.get(id=section_id, project=project)
-                section.order = index  # Update the section order
+        sections = data.get('sections', [])
+        
+        for section_data in sections:
+            section_id = section_data.get('section_id')
+            new_position = section_data.get('new_position')
+            
+            if section_id and new_position:
+                section = Section.objects.get(id=section_id)
+                section.position = new_position
                 section.save()
-            except Section.DoesNotExist:
-                return JsonResponse({'success': False, 'error': 'Section not found'}, status=404)
-
+        
         return JsonResponse({'success': True})
-    
-    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
 @method_decorator(csrf_exempt, name="dispatch")

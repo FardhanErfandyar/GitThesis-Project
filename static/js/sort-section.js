@@ -62,37 +62,55 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateSectionOrder(order, projectId) {
     var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+    // Log the exact request payload
+    const requestData = {
+        sections: order // Wrapped in 'sections' key
+    };
+    
+    console.log("Sending request with data:", JSON.stringify(requestData, null, 2));
+
     fetch(`/project/${projectId}/update-section-order/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrfToken
         },
-        body: JSON.stringify({
-            order: order,
-            project_id: projectId
-        })
+        body: JSON.stringify(requestData)
     })
-    .then(response => response.json())
+    .then(response => {
+        // First check if response is ok
+        if (!response.ok) {
+            // Log the raw response for debugging
+            return response.text().then(text => {
+                console.error('Server response:', text);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             console.log("Section order updated successfully");
             showSuccessMessage("Section order updated successfully");
+            // Optional: Refresh the page or update the UI
+            window.location.reload();
         } else {
-            console.error("Error:", data.error);
-            showErrorMessage("Failed to update section order");
+            console.error("Server returned error:", data);
+            showErrorMessage(data.error || "Failed to update section order");
         }
     })
     .catch(error => {
-        console.error("An error occurred:", error);
-        showErrorMessage("An error occurred while updating section order");
+        console.error("Request failed:", error);
+        showErrorMessage("An error occurred while updating section order. Please check the console for details.");
     });
 }
 
 function showSuccessMessage(message) {
+    // You might want to replace this with a better UI notification
     alert(message);
 }
 
 function showErrorMessage(message) {
+    // You might want to replace this with a better UI notification
     alert(message);
 }
