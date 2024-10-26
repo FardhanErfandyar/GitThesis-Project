@@ -62,6 +62,10 @@ def home(request):
 
 
 def landing(request):
+    
+    if request.user.is_authenticated:    
+        return redirect("home")
+    
     return render(request, "landing.html")
 
 @csrf_exempt  # Only use this if necessary (for debugging or non-logged in user requests)

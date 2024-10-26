@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "gitthesis",
+    'django_tex',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +69,11 @@ TEMPLATES = [
                 
             ],
         },
+    },
+    {
+        'NAME': 'tex',
+        'BACKEND': 'django_tex.engine.TeXEngine', 
+        'APP_DIRS': True,
     },
 ]
 
@@ -140,3 +146,8 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+
+# LATEX
+LATEX_INTERPRETER = 'pdflatex'
+# Pass options as a single string, not as a lists
+LATEX_INTERPRETER_OPTIONS = '-interaction=nonstopmode -shell-escape'
