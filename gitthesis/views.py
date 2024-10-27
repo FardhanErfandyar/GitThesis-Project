@@ -22,6 +22,14 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.http import require_http_methods
 from django.db import models
+from django.http import HttpResponse, FileResponse
+from django.core.files.base import ContentFile
+from django_tex.core import compile_template_to_pdf
+from django_tex.shortcuts import render_to_pdf
+from django_tex.response import PDFResponse
+import shutil
+import time
+import logging
 
 
 def project(request):
@@ -62,7 +70,103 @@ def home(request):
 
 
 def landing(request):
+
+    if request.user.is_authenticated:    
+        return redirect("home")
+    
     return render(request, "landing.html")
+
+
+logger = logging.getLogger(__name__)
+
+def generate_pdf(file_path):
+    try:
+        logger.info(f"Starting PDF generation for file: {file_path}")
+        
+        # Directory for output PDF (media/tex_file)
+        pdf_output_dir = os.path.join(settings.MEDIA_ROOT, 'tex_file')
+        os.makedirs(pdf_output_dir, exist_ok=True)
+        
+        # Define PDF file name and source path based on the .tex file
+        pdf_filename = os.path.basename(file_path).replace('.tex', '.pdf')
+        pdf_source_path = os.path.join(os.path.dirname(file_path), pdf_filename)
+        
+        # Run pdflatex in the same directory as the .tex file
+        process = subprocess.run(
+        ['pdflatex', '-interaction=nonstopmode', file_path],
+        cwd=os.path.dirname(file_path),
+        capture_output=True,
+        text=True
+        )
+        logger.error(f"pdflatex stdout: {process.stdout}")
+        logger.error(f"pdflatex stderr: {process.stderr}")
+        # Define the destination path for the PDF within media/tex_file
+        pdf_dest_path = os.path.join(pdf_output_dir, pdf_filename)
+
+        # Move the generated PDF to media/tex_file if it exists
+        if os.path.exists(pdf_source_path):
+            shutil.move(pdf_source_path, pdf_dest_path)
+            logger.info(f"PDF moved to: {pdf_dest_path}")
+            
+            # Return the PDF as a response
+            return FileResponse(
+                open(pdf_dest_path, 'rb'),
+                filename=pdf_filename,
+                content_type='application/pdf'
+            )
+        else:
+            logger.error(f"PDF file not found at source: {pdf_source_path}")
+            return HttpResponse("PDF generation failed", status=500)
+            
+    except subprocess.CalledProcessError as e:
+        logger.error(f"pdflatex error: {e.stderr}")
+        return HttpResponse(f"Error generating PDF: {e.stderr}", status=500)
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        return HttpResponse(f"Unexpected error: {str(e)}", status=500)
+
+def create_tex_file(request):
+    if request.method == "POST":
+        try:
+            latex_content = request.POST.get('latex_content')
+
+            if not latex_content:
+                return HttpResponse("Konten LaTeX tidak boleh kosong.", status=400)
+
+            # Add a minimal LaTeX template if not already provided
+            if '\\documentclass' not in latex_content:
+                latex_content = f"""\\documentclass{{article}}
+\\usepackage[utf8]{{inputenc}}
+\\begin{{document}}
+{latex_content}
+\\end{{document}}
+"""
+            # Ensure the tex_file directory exists in media
+            tex_dir = os.path.join(settings.MEDIA_ROOT, 'tex_file')
+            os.makedirs(tex_dir, exist_ok=True)
+
+            # Delete existing .tex and .pdf files in the directory
+            for file in os.listdir(tex_dir):
+                file_path = os.path.join(tex_dir, file)
+                if file.endswith(('.tex', '.pdf', '.log', '.aux')):
+                    os.remove(file_path)
+
+            # Create a unique file name with timestamp
+            file_name = f'output_{int(time.time())}.tex'
+            full_file_path = os.path.join(tex_dir, file_name)
+
+            # Write the LaTeX content to the .tex file
+            with open(full_file_path, 'w', encoding='utf-8') as f:
+                f.write(latex_content)
+
+            # Generate the PDF and return it
+            return generate_pdf(full_file_path)
+
+        except Exception as e:
+            logger.error(f"Error in create_tex_file: {str(e)}")
+            return HttpResponse(f"Error creating TeX file: {str(e)}", status=500)
+
+    return render(request, 'project_detail')
 
 @csrf_exempt  # Only use this if necessary (for debugging or non-logged in user requests)
 def update_section_order(request, project_id):
