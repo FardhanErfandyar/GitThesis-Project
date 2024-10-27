@@ -149,5 +149,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 # LATEX
 LATEX_INTERPRETER = 'pdflatex'
-# Pass options as a single string, not as a lists
 LATEX_INTERPRETER_OPTIONS = '-interaction=nonstopmode -shell-escape'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
+    },
+}
