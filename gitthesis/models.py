@@ -126,7 +126,7 @@ class Comment(models.Model):
         Section, on_delete=models.CASCADE, related_name="comments"
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
+    content = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

@@ -129,10 +129,11 @@ def generate_pdf(file_path):
         logger.error(f"Unexpected error: {str(e)}")
         return HttpResponse(f"Unexpected error: {str(e)}", status=500)
 
-def create_tex_file(request):
+def create_tex_file(request, project_id):
     if request.method == "POST":
         try:
             latex_content = request.POST.get('latex_content')
+            project = get_object_or_404(Project, id=project_id)
 
             if not latex_content:
                 return HttpResponse("Konten LaTeX tidak boleh kosong.", status=400)
@@ -156,7 +157,8 @@ def create_tex_file(request):
                     os.remove(file_path)
 
             # Create a unique file name with timestamp
-            file_name = f'output_{int(time.time())}.tex'
+            project_name = project.name
+            file_name = f'{project_name}_{int(time.time())}.tex'
             full_file_path = os.path.join(tex_dir, file_name)
 
             if os.path.exists(full_file_path):
