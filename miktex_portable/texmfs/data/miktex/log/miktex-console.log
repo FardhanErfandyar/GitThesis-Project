@@ -847,3 +847,4 @@
 2024-10-29 08:30:53,828+0700 WARN  miktex-console.packagemanager - dependency problem: showframe is required by _miktex-latex-packages
 2024-10-29 08:30:53,828+0700 WARN  miktex-console.packagemanager - dependency problem: thailatex is required by _miktex-latex-packages
 2024-10-29 08:30:53,830+0700 WARN  miktex-console.packagemanager - dependency problem: luxi is required by _miktex-fonts-type1
+2024-10-29 09:49:06,675+0700 INFO  main - finishing with exit code 0

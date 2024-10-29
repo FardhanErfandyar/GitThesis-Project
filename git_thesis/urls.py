@@ -32,7 +32,7 @@ urlpatterns = [
     path('project/<int:project_id>/update-section-order/', update_section_order, name='update_section_order'),
     path('delete-image/<int:image_id>/', views.delete_image, name='delete_image'),
 
-    path('create-tex/', views.create_tex_file, name='create_tex'),
+    path('create-tex/<int:project_id>/', views.create_tex_file, name='create_tex_project'),
 ]
 
 

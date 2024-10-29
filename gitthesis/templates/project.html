@@ -100,8 +100,9 @@
                         <div class="line-numbers" id="lineNumbers"></div>
                         <div class="flex-grow-1 section">
 
-                            <form method="post"action="{% url 'create_tex' %}" >
+                            <form method="post"action="{% url 'create_tex_project' project.id %}" >
                                 {% csrf_token %}
+                                <input type="hidden" name="project_id" value="{{ project.id }}">
                                 <textarea name="latex_content" id="latex_content" rows="26" cols="100" placeholder="Write..." style="border: none; outline: none;"></textarea>
                                 <button type="submit" class="btn btn-primary btn-sm mt-1 mb-1">Generate PDF</button>
                             </form>
