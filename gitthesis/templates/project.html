@@ -57,7 +57,7 @@
                                 {% for image in images %}
                                     <div class="uploaded-image rounded p-2 mb-3" id="image-{{ image.id }}">
                                         <img src="{{ image.image.url }}" alt="{{ image.image.name }}" class="img-fluid">
-                                        <p class="mt-2" style="word-wrap: break-word;">{{ image.image.name }}</p>
+                                        <p class="mt-2" style="word-wrap: break-word;">{{ image.image.name|cut:"project_images/" }}</p>
                                         <button class="btn btn-outline-danger btn-sm mt-1" onclick="deleteImage('{{ image.id }}')">Delete</button>
                                     </div>
                                 {% empty %}

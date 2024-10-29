@@ -87,6 +87,22 @@ def generate_pdf(file_path):
         # Directory for output PDF (media/tex_file)
         pdf_output_dir = os.path.join(settings.MEDIA_ROOT, 'tex_file')
         os.makedirs(pdf_output_dir, exist_ok=True)
+
+        # Copy project_images directory instead of symlink for Windows
+        images_dir = os.path.join(pdf_output_dir, 'images')
+        project_images_dir = os.path.join(settings.MEDIA_ROOT, 'project_images')
+        
+        # Remove existing images directory if exists
+        if os.path.exists(images_dir):
+            if os.path.isdir(images_dir):
+                shutil.rmtree(images_dir)
+            else:
+                os.remove(images_dir)
+        
+        # Copy the project_images directory
+        shutil.copytree(project_images_dir, images_dir)
+        logger.info(f"Copied project_images to: {images_dir}")
+        
         
         # Define PDF file name and source path based on the .tex file
         pdf_filename = os.path.basename(file_path).replace('.tex', '.pdf')
@@ -275,7 +291,7 @@ def upload_image(request, project_id):
 
             # Buat nama file yang unik
             timestamp = timezone.now().strftime("%Y%m%d%H%M%S")  # Format timestamp
-            unique_filename = f"project_{project_id}_{timestamp}{ext}"
+            unique_filename = f"{project_id}_{timestamp}{ext}"
 
             # Simpan file image dengan nama unik
             file_name = default_storage.save(f"project_images/{unique_filename}", image)
