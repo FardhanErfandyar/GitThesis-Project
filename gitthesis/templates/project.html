@@ -57,7 +57,7 @@
                                 {% for image in images %}
                                     <div class="uploaded-image rounded p-2 mb-3" id="image-{{ image.id }}">
                                         <img src="{{ image.image.url }}" alt="{{ image.image.name }}" class="img-fluid">
-                                        <p class="mt-2" style="word-wrap: break-word;">{{ image.image.name }}</p>
+                                        <p class="mt-2" style="word-wrap: break-word;">{{ image.image.name|cut:"project_images/" }}</p>
                                         <button class="btn btn-outline-danger btn-sm mt-1" onclick="deleteImage('{{ image.id }}')">Delete</button>
                                     </div>
                                 {% empty %}
@@ -85,14 +85,17 @@
                     <!-- LaTeX Editor -->
                     <!-- latextemplate.html -->
                     {% for section in sections %}
-                        <div class="border-top my-2 gradient-text-sidebar mt-5" id="{{ section.title|slugify }}-{{ section.id }}" style="border-width: 5px;">{{ section.title }}</div>
-                        <div class="latex-editor d-flex">
-                            <div class="line-numbers" id="lineNumbers"></div>
-                            <div class="flex-grow-1 section">
-                                {% include 'latextemplate.html' %}
+                        <div class="section-container" data-section-id="{{ section.id }}">
+                            <div class="border-top my-2 gradient-text-sidebar mt-5" id="{{ section.title|slugify }}-{{ section.id }}" style="border-width: 5px;">{{ section.title }}</div>
+                            <div class="latex-editor d-flex">
+                                <div class="line-numbers" id="lineNumbers"></div>
+                                <div class="flex-grow-1 section">
+                                    <textarea class="editor-content" placeholder="Tulis kode LaTeX di sini..." oninput="updateLineNumbers()">{{ section.content }}</textarea>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
+
 
                     {% comment %} test create latex {% endcomment %}
                     <div class="border-top my-3 gradient-text-sidebar mt-3" id="{{ section.title|slugify }}-{{ section.id }}" style="border-width: 5px;">Test Generate PDF</div>
@@ -100,8 +103,9 @@
                         <div class="line-numbers" id="lineNumbers"></div>
                         <div class="flex-grow-1 section">
 
-                            <form method="post"action="{% url 'create_tex' %}" >
+                            <form method="post"action="{% url 'create_tex_project' project.id %}" >
                                 {% csrf_token %}
+                                <input type="hidden" name="project_id" value="{{ project.id }}">
                                 <textarea name="latex_content" id="latex_content" rows="26" cols="100" placeholder="Write..." style="border: none; outline: none;"></textarea>
                                 <button type="submit" class="btn btn-primary btn-sm mt-1 mb-1">Generate PDF</button>
                             </form>
@@ -187,6 +191,9 @@
     {% comment %} sort-table {% endcomment %}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="{% static 'js/sort-section.js' %}"></script>
+
+    {% comment %} update section content {% endcomment %}
+    <script src="{% static 'js/update-section-content.js' %}"></script>
 
 
 {% endblock %}
