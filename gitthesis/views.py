@@ -324,12 +324,23 @@ def delete_section(request, section_id):
 def delete_image(request, image_id):
     # Mencari gambar berdasarkan ID
     image = get_object_or_404(ProjectImage, id=image_id)
+
+    original_image_path = image.image.path
+    filename = os.path.basename(original_image_path)
+
+    tex_file_dir = os.path.join(settings.MEDIA_ROOT, 'tex_file')
+    symlink_images_dir = os.path.join(tex_file_dir, 'images')
+    symlink_image_path = os.path.join(symlink_images_dir, filename)
     
     # Menghapus gambar dari database
     image.delete()
     image_path = image.image.path
     if os.path.exists(image_path):
         os.remove(image_path)
+
+    if os.path.exists(symlink_image_path):
+            os.remove(symlink_image_path)
+            logger.info(f"Deleted symlink/copied image: {symlink_image_path}")
     
     # Mengembalikan respons sukses
     return JsonResponse({'status': 'success'}, status=200)
