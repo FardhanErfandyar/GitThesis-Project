@@ -85,14 +85,17 @@
                     <!-- LaTeX Editor -->
                     <!-- latextemplate.html -->
                     {% for section in sections %}
-                        <div class="border-top my-2 gradient-text-sidebar mt-5" id="{{ section.title|slugify }}-{{ section.id }}" style="border-width: 5px;">{{ section.title }}</div>
-                        <div class="latex-editor d-flex">
-                            <div class="line-numbers" id="lineNumbers"></div>
-                            <div class="flex-grow-1 section">
-                                {% include 'latextemplate.html' %}
+                        <div class="section-container" data-section-id="{{ section.id }}">
+                            <div class="border-top my-2 gradient-text-sidebar mt-5" id="{{ section.title|slugify }}-{{ section.id }}" style="border-width: 5px;">{{ section.title }}</div>
+                            <div class="latex-editor d-flex">
+                                <div class="line-numbers" id="lineNumbers"></div>
+                                <div class="flex-grow-1 section">
+                                    <textarea class="editor-content" placeholder="Tulis kode LaTeX di sini..." oninput="updateLineNumbers()">{{ section.content }}</textarea>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
+
 
                     {% comment %} test create latex {% endcomment %}
                     <div class="border-top my-3 gradient-text-sidebar mt-3" id="{{ section.title|slugify }}-{{ section.id }}" style="border-width: 5px;">Test Generate PDF</div>
@@ -188,6 +191,9 @@
     {% comment %} sort-table {% endcomment %}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="{% static 'js/sort-section.js' %}"></script>
+
+    {% comment %} update section content {% endcomment %}
+    <script src="{% static 'js/update-section-content.js' %}"></script>
 
 
 {% endblock %}

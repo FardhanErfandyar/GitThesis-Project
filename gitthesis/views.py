@@ -197,6 +197,22 @@ def create_tex_file(request, project_id):
 
     return render(request, 'project_detail')
 
+@csrf_exempt
+def update_section_content(request, project_id, section_id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        content = data.get("content", "")
+
+        try:
+            section = Section.objects.get(id=section_id, project_id=project_id)
+            section.content = content
+            section.save()
+            return JsonResponse({"success": True, "message": "Section updated successfully"})
+        except Section.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Section not found"}, status=404)
+    
+    return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
 @csrf_exempt  # Only use this if necessary (for debugging or non-logged in user requests)
 def update_section_order(request, project_id):
     try:
