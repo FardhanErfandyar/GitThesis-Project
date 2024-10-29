@@ -148,8 +148,19 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 # LATEX
-LATEX_INTERPRETER = 'pdflatex'
-LATEX_INTERPRETER_OPTIONS = '-interaction=nonstopmode -shell-escape'
+# Path ke direktori MiKTeX Portable
+project_root = Path(__file__).resolve().parent.parent  
+
+# Path ke direktori MiKTeX Portable dari root proyek
+miktex_bin_path = project_root / "miktex_portable" / "texmfs" / "install" / "miktex" / "bin" / "x64"
+pdflatex_path = miktex_bin_path / "pdflatex.exe"
+
+if pdflatex_path.is_file():
+    LATEX_INTERPRETER = pdflatex_path
+else:
+    raise FileNotFoundError(f"pdflatex.exe tidak ditemukan di {pdflatex_path}")
+
+LATEX_INTERPRETER_OPTIONS = '-interaction=nonstopmode', '-shell-escape'
 
 LOGGING = {
     'version': 1,

@@ -30,6 +30,7 @@ from django_tex.response import PDFResponse
 import shutil
 import time
 import logging
+from git_thesis.settings import LATEX_INTERPRETER, LATEX_INTERPRETER_OPTIONS
 
 
 def project(request):
@@ -90,10 +91,13 @@ def generate_pdf(file_path):
         # Define PDF file name and source path based on the .tex file
         pdf_filename = os.path.basename(file_path).replace('.tex', '.pdf')
         pdf_source_path = os.path.join(os.path.dirname(file_path), pdf_filename)
-        
+
+        logger.info(f"Using LATEX_INTERPRETER: {LATEX_INTERPRETER}")
+        logger.info(f"Current working directory: {os.path.dirname(file_path)}")
+
         # Run pdflatex in the same directory as the .tex file
         process = subprocess.run(
-        ['pdflatex', '-interaction=nonstopmode', file_path],
+        [str(LATEX_INTERPRETER), '-interaction=nonstopmode', '-shell-escape', file_path],
         cwd=os.path.dirname(file_path),
         capture_output=True,
         text=True
@@ -155,9 +159,16 @@ def create_tex_file(request):
             file_name = f'output_{int(time.time())}.tex'
             full_file_path = os.path.join(tex_dir, file_name)
 
+            if os.path.exists(full_file_path):
+                os.chmod(full_file_path, 0o666)
+
             # Write the LaTeX content to the .tex file
             with open(full_file_path, 'w', encoding='utf-8') as f:
                 f.write(latex_content)
+
+            # Debug: Check and log file permissions after creating the .tex file
+            file_stat = os.stat(full_file_path)
+            logger.info(f"File permissions for {full_file_path}: {oct(file_stat.st_mode)}")
 
             # Generate the PDF and return it
             return generate_pdf(full_file_path)
