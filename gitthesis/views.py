@@ -77,10 +77,9 @@ def landing(request):
     
     return render(request, "landing.html")
 
-
 logger = logging.getLogger(__name__)
 
-def generate_pdf(file_path):
+def generate_pdf(request, file_path):
     try:
         logger.info(f"Starting PDF generation for file: {file_path}")
         
@@ -136,14 +135,14 @@ def generate_pdf(file_path):
             )
         else:
             logger.error(f"PDF file not found at source: {pdf_source_path}")
-            return HttpResponse("PDF generation failed", status=500)
+            render(request, 'errorhandling.html', {'error_message': "PDF generation failed"})
             
     except subprocess.CalledProcessError as e:
         logger.error(f"pdflatex error: {e.stderr}")
-        return HttpResponse(f"Error generating PDF: {e.stderr}", status=500)
+        return render(request, 'errorhandling.html', {'error_message': f"Error generating PDF: {e.stderr}"})
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
-        return HttpResponse(f"Unexpected error: {str(e)}", status=500)
+        return render(request, 'errorhandling.html', {'error_message': f"Unexpected error: {str(e)}"})
 
 def create_tex_file(request, project_id):
     if request.method == "POST":
@@ -152,7 +151,7 @@ def create_tex_file(request, project_id):
             project = get_object_or_404(Project, id=project_id)
 
             if not latex_content:
-                return HttpResponse("Konten LaTeX tidak boleh kosong.", status=400)
+                return render(request, 'errorhandling.html', {'error_message': "Konten LaTeX tidak boleh kosong."}, status=400)
 
             # Add a minimal LaTeX template if not already provided
             if '\\documentclass' not in latex_content:
@@ -193,7 +192,7 @@ def create_tex_file(request, project_id):
 
         except Exception as e:
             logger.error(f"Error in create_tex_file: {str(e)}")
-            return HttpResponse(f"Error creating TeX file: {str(e)}", status=500)
+            return render(request, 'errorhandling.html', {'error_message': f"Error creating TeX file: {str(e)}"})
 
     return render(request, 'project_detail')
 
