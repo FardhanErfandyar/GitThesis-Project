@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "gitthesis",
+    'django_tex',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,11 @@ TEMPLATES = [
             ],
         },
     },
+    {
+        'NAME': 'tex',
+        'BACKEND': 'django_tex.engine.TeXEngine', 
+        'APP_DIRS': True,
+    },
 ]
 
 WSGI_APPLICATION = "git_thesis.wsgi.application"
@@ -77,22 +83,28 @@ WSGI_APPLICATION = "git_thesis.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "gitthesis",
-        "USER": "root",
-        "PASSWORD": "your_password",
-        "HOST": "localhost",
-        "PORT": "3306",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres.vmdtthgnubgffvzxzdjo", 
+        "PASSWORD": "gxYoAoWCBCfoepgr",
+        "HOST": "aws-0-ap-southeast-1.pooler.supabase.com",
+        "PORT": "6543",
     }
 }
+
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.mysql",
+#         "NAME": "gitthesis",
+#         "USER": "root",
+#         "PASSWORD": "your_password",
+#         "HOST": "localhost",
+#         "PORT": "3306",
+#     }
+# }
 
 
 # Password validation
@@ -140,3 +152,36 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+
+# LATEX
+# Path ke direktori MiKTeX Portable
+project_root = Path(__file__).resolve().parent.parent  
+
+# Path ke direktori MiKTeX Portable dari root proyek
+miktex_bin_path = project_root / "miktex_portable" / "texmfs" / "install" / "miktex" / "bin" / "x64"
+pdflatex_path = miktex_bin_path / "pdflatex.exe"
+
+if pdflatex_path.is_file():
+    LATEX_INTERPRETER = pdflatex_path
+else:
+    raise FileNotFoundError(f"pdflatex.exe tidak ditemukan di {pdflatex_path}")
+
+LATEX_INTERPRETER_OPTIONS = '-interaction=nonstopmode', '-shell-escape'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
+    },
+}

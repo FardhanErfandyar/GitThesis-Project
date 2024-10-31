@@ -11,34 +11,37 @@
             <div class="col-md-2 sidebar-left">
                 <h5 class="gradient-text-sidebar fw-semibold">Struktur Dokumen</h5>
 
-            <!-- Button to add a new section -->
-            <div>
-                <input type="hidden" id="project-id" value="{{ project.id }}">
-                <button class="nav-item btn btn-primary btn-sm mt-1 mb-1" onclick="addSection()">Add Section</button>
-                <button id="cancelSection" class="nav-item btn btn-outline-primary btn-sm mt-1 mb-1" style="display:none" onclick="cancelAddSection()">Cancel</button>
-                <!-- Single delete button to show minus icons -->
-                <button id="deleteSelected" class="nav-item btn btn-danger btn-sm mt-1 mb-1" onclick="toggleDeleteIcons()">Delete Section</button>
-                <ul class="list-unstyled mb-3">
-                    {% for section in project.sections.all %}
-                        <li id="section-{{ section.id }}" class="d-flex justify-content-between align-items-center">
-                            <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-3 text-dark fw-medium" 
-                            href="#{{ section.title|slugify }}-{{ section.id }}"
-                            ondblclick="editTitle(this, '{{ section.id }}')">
-                            {{ section.title }}
-                            </a>
-                            <!-- Minus icon for deletion -->
-                            <img id="checkbox-{{ section.id }}" src="{% static 'images/minus.png' %}"
-                                alt="Select" class="section-checkbox" 
-                                style="cursor: pointer; margin-left: 10px; display: none; width: 15px; height: 15px;" 
-                                onclick="confirmDelete('{{ section.id }}')">
-                        </li>
-                    {% empty %}
-                        <li>No sections available.</li>
-                    {% endfor %}
-                </ul>
-            </div>
+                <!-- Button to add a new section -->
+                <div>
+                    <input type="hidden" id="project-id" value="{{ project.id }}">
+                    <button class="nav-item btn btn-primary btn-sm mt-1 mb-1" onclick="addSection()">Add Section</button>
+                    <button id="cancelSection" class="nav-item btn btn-outline-primary btn-sm mt-1 mb-1" style="display:none" onclick="cancelAddSection()">Cancel</button>
+                    <!-- Single delete button to show minus icons -->
+                    <button id="deleteSelected" class="nav-item btn btn-danger btn-sm mt-1" onclick="toggleDeleteIcons()">Delete Section</button>
 
-                <h5 class="gradient-text-sidebar fw-semibold">Images</h5>
+                    <ul id="section-list" class="list-unstyled mb-4 mt-4">
+                        {% for section in sections %}
+                            <li id="section-{{ section.id }}" class="d-flex justify-content-between align-items-center section-query" data-position="{{ section.position }}">
+                                <a class="nav-item pt-1 pb-1 btn btn-outline-primary mt-2 text-dark fw-medium" 
+                                href="#{{ section.title|slugify }}-{{ section.id }}"
+                                ondblclick="editTitle(this, '{{ section.id }}')">
+                                {{ section.title }}
+                                </a>
+                                <img id="checkbox-{{ section.id }}" src="{% static 'images/minus.png' %}"
+                                    alt="Select" class="section-checkbox" 
+                                    style="cursor: pointer; margin-left: 10px; display: none; width: 15px; height: 15px;" 
+                                    onclick="confirmDelete('{{ section.id }}')">
+                            </li>
+                        {% empty %}
+                            <li>No sections available.</li>
+                        {% endfor %}
+                    </ul>
+                    
+
+                    <button id="update-position-btn" class="nav-item btn btn-outline-primary btn-sm mt-1 mb-1" type="button">Update Position</button>
+                </div>
+
+                <h5 class="gradient-text-sidebar fw-semibold mt-3">Images</h5>
 
                 <ul class="list-unstyled">
                     <li class="image-upload-item">
@@ -54,7 +57,7 @@
                                 {% for image in images %}
                                     <div class="uploaded-image rounded p-2 mb-3" id="image-{{ image.id }}">
                                         <img src="{{ image.image.url }}" alt="{{ image.image.name }}" class="img-fluid">
-                                        <p class="mt-2" style="word-wrap: break-word;">{{ image.image.name }}</p>
+                                        <p class="mt-2" style="word-wrap: break-word;">{{ image.image.name|cut:"project_images/" }}</p>
                                         <button class="btn btn-outline-danger btn-sm mt-1" onclick="deleteImage('{{ image.id }}')">Delete</button>
                                     </div>
                                 {% empty %}
@@ -81,31 +84,33 @@
                     
                     <!-- LaTeX Editor -->
                     <!-- latextemplate.html -->
-                    {% for section in project.sections.all %}
-                        <div class="border-top my-3 gradient-text-sidebar" id="{{ section.title|slugify }}-{{ section.id }}" style="border-width: 5px;">{{ section.title }}</div>
-                        <div class="latex-editor d-flex">
-                            <div class="line-numbers" id="lineNumbers"></div>
-                            <div class="flex-grow-1 section">
-                                {% include 'latextemplate.html' %}
+                    {% for section in sections %}
+                        <div class="section-container" data-section-id="{{ section.id }}">
+                            <div class="border-top my-2 gradient-text-sidebar mt-5" id="{{ section.title|slugify }}-{{ section.id }}" style="border-width: 5px;">{{ section.title }}</div>
+                            <div class="latex-editor d-flex">
+                                <div class="line-numbers" id="lineNumbers"></div>
+                                <div class="flex-grow-1 section">
+                                    <textarea class="editor-content" placeholder="Tulis kode LaTeX di sini..." oninput="updateLineNumbers()">{{ section.content }}</textarea>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
 
-                    <!-- Form untuk tombol "Edit with LaTeX" -->
-                    <form id="overleafForm" action="https://www.overleaf.com/docs" method="post" target="_blank">
-                        <input type="hidden" id="snip_uri" name="snip_uri" value="">
-                        <input type="submit" class="btn btn-primary btn-sm" value="Open in Overleaf" style="margin-top: 10px; margin-bottom: 10px;"> 
-                    </form>
-                    
-                    <!-- Tombol "Preview" -->
-                    <div class="d-flex justify-content-end">
-                        <button id="previewLatex" class="btn btn-primary mt-3">Preview LaTeX</button>
-                    </div>
 
-                    <!-- Hasil Preview -->
-                    <div class="latex-output mt-3 d-flex justify-content-center">
-                        <h5 class="gradient-text-sidebar">Preview</h5><br>
-                        <div id="latexPreview"></div>
+                    {% comment %} test create latex {% endcomment %}
+                    <div class="border-top my-3 gradient-text-sidebar mt-3" id="{{ section.title|slugify }}-{{ section.id }}" style="border-width: 5px;">Test Generate PDF</div>
+                    <div class="latex-editor d-flex">
+                        <div class="line-numbers" id="lineNumbers"></div>
+                        <div class="flex-grow-1 section">
+
+                            <form method="post"action="{% url 'create_tex_project' project.id %}" >
+                                {% csrf_token %}
+                                <input type="hidden" name="project_id" value="{{ project.id }}">
+                                <textarea name="latex_content" id="latex_content" rows="26" cols="100" placeholder="Write..." style="border: none; outline: none;"></textarea>
+                                <button type="submit" class="btn btn-primary btn-sm mt-1 mb-1">Generate PDF</button>
+                            </form>
+                            
+                        </div>
                     </div>
                     
                 </div>
@@ -146,7 +151,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <!-- Integrasi MathJax -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     {% comment %} linenumbers {% endcomment %}
@@ -166,6 +170,13 @@
 
     {% comment %} Delete Image {% endcomment %}
     <script src="{% static 'js/delete-image.js' %}"></script>
+
+    {% comment %} sort-table {% endcomment %}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="{% static 'js/sort-section.js' %}"></script>
+
+    {% comment %} update section content {% endcomment %}
+    <script src="{% static 'js/update-section-content.js' %}"></script>
 
 
 {% endblock %}

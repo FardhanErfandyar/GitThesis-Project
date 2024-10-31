@@ -21,6 +21,16 @@ import json
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.http import require_http_methods
+from django.db import models
+from django.http import HttpResponse, FileResponse
+from django.core.files.base import ContentFile
+from django_tex.core import compile_template_to_pdf
+from django_tex.shortcuts import render_to_pdf
+from django_tex.response import PDFResponse
+import shutil
+import time
+import logging
+from git_thesis.settings import LATEX_INTERPRETER, LATEX_INTERPRETER_OPTIONS
 
 
 def project(request):
@@ -30,7 +40,8 @@ def project(request):
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     images = project.images.all().order_by('-created_at') 
-    return render(request, 'project.html', {'project': project, 'images': images})
+    sections = project.sections.all().order_by('position') 
+    return render(request, 'project.html', {'project': project, 'images': images, 'sections': sections})
 
 
 def home(request):
@@ -60,7 +71,166 @@ def home(request):
 
 
 def landing(request):
+
+    if request.user.is_authenticated:    
+        return redirect("home")
+    
     return render(request, "landing.html")
+
+logger = logging.getLogger(__name__)
+
+def generate_pdf(request, file_path):
+    try:
+        logger.info(f"Starting PDF generation for file: {file_path}")
+        
+        # Directory for output PDF (media/tex_file)
+        pdf_output_dir = os.path.join(settings.MEDIA_ROOT, 'tex_file')
+        os.makedirs(pdf_output_dir, exist_ok=True)
+
+        # Copy project_images directory instead of symlink for Windows
+        images_dir = os.path.join(pdf_output_dir, 'images')
+        project_images_dir = os.path.join(settings.MEDIA_ROOT, 'project_images')
+        
+        # Remove existing images directory if exists
+        if os.path.exists(images_dir):
+            if os.path.isdir(images_dir):
+                shutil.rmtree(images_dir)
+            else:
+                os.remove(images_dir)
+        
+        # Copy the project_images directory
+        shutil.copytree(project_images_dir, images_dir)
+        logger.info(f"Copied project_images to: {images_dir}")
+        
+        
+        # Define PDF file name and source path based on the .tex file
+        pdf_filename = os.path.basename(file_path).replace('.tex', '.pdf')
+        pdf_source_path = os.path.join(os.path.dirname(file_path), pdf_filename)
+
+        logger.info(f"Using LATEX_INTERPRETER: {LATEX_INTERPRETER}")
+        logger.info(f"Current working directory: {os.path.dirname(file_path)}")
+
+        # Run pdflatex in the same directory as the .tex file
+        process = subprocess.run(
+        [str(LATEX_INTERPRETER), '-interaction=nonstopmode', '-shell-escape', file_path],
+        cwd=os.path.dirname(file_path),
+        capture_output=True,
+        text=True
+        )
+        logger.error(f"pdflatex stdout: {process.stdout}")
+        logger.error(f"pdflatex stderr: {process.stderr}")
+        # Define the destination path for the PDF within media/tex_file
+        pdf_dest_path = os.path.join(pdf_output_dir, pdf_filename)
+
+        # Move the generated PDF to media/tex_file if it exists
+        if os.path.exists(pdf_source_path):
+            shutil.move(pdf_source_path, pdf_dest_path)
+            logger.info(f"PDF moved to: {pdf_dest_path}")
+            
+            # Return the PDF as a response
+            return FileResponse(
+                open(pdf_dest_path, 'rb'),
+                filename=pdf_filename,
+                content_type='application/pdf'
+            )
+        else:
+            logger.error(f"PDF file not found at source: {pdf_source_path}")
+            render(request, 'errorhandling.html', {'error_message': "PDF generation failed"})
+            
+    except subprocess.CalledProcessError as e:
+        logger.error(f"pdflatex error: {e.stderr}")
+        return render(request, 'errorhandling.html', {'error_message': f"Error generating PDF: {e.stderr}"})
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        return render(request, 'errorhandling.html', {'error_message': f"Unexpected error: {str(e)}"})
+
+def create_tex_file(request, project_id):
+    if request.method == "POST":
+        try:
+            latex_content = request.POST.get('latex_content')
+            project = get_object_or_404(Project, id=project_id)
+
+            if not latex_content:
+                return render(request, 'errorhandling.html', {'error_message': "Konten LaTeX tidak boleh kosong."}, status=400)
+
+            # Add a minimal LaTeX template if not already provided
+            if '\\documentclass' not in latex_content:
+                latex_content = f"""\\documentclass{{article}}
+\\usepackage[utf8]{{inputenc}}
+\\begin{{document}}
+{latex_content}
+\\end{{document}}
+"""
+            # Ensure the tex_file directory exists in media
+            tex_dir = os.path.join(settings.MEDIA_ROOT, 'tex_file')
+            os.makedirs(tex_dir, exist_ok=True)
+
+            # Delete existing .tex and .pdf files in the directory
+            for file in os.listdir(tex_dir):
+                file_path = os.path.join(tex_dir, file)
+                if file.endswith(('.tex', '.pdf', '.log', '.aux')):
+                    os.remove(file_path)
+
+            # Create a unique file name with timestamp
+            project_name = project.name
+            file_name = f'{project_name}_{int(time.time())}.tex'
+            full_file_path = os.path.join(tex_dir, file_name)
+
+            if os.path.exists(full_file_path):
+                os.chmod(full_file_path, 0o666)
+
+            # Write the LaTeX content to the .tex file
+            with open(full_file_path, 'w', encoding='utf-8') as f:
+                f.write(latex_content)
+
+            # Debug: Check and log file permissions after creating the .tex file
+            file_stat = os.stat(full_file_path)
+            logger.info(f"File permissions for {full_file_path}: {oct(file_stat.st_mode)}")
+
+            # Generate the PDF and return it
+            return generate_pdf(full_file_path)
+
+        except Exception as e:
+            logger.error(f"Error in create_tex_file: {str(e)}")
+            return render(request, 'errorhandling.html', {'error_message': f"Error creating TeX file: {str(e)}"})
+
+    return render(request, 'project_detail')
+
+@csrf_exempt
+def update_section_content(request, project_id, section_id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        content = data.get("content", "")
+
+        try:
+            section = Section.objects.get(id=section_id, project_id=project_id)
+            section.content = content
+            section.save()
+            return JsonResponse({"success": True, "message": "Section updated successfully"})
+        except Section.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Section not found"}, status=404)
+    
+    return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
+@csrf_exempt  # Only use this if necessary (for debugging or non-logged in user requests)
+def update_section_order(request, project_id):
+    try:
+        data = json.loads(request.body)
+        sections = data.get('sections', [])
+        
+        for section_data in sections:
+            section_id = section_data.get('id')
+            new_position = section_data.get('position')
+            
+            if section_id and new_position:
+                section = Section.objects.get(id=section_id)
+                section.position = new_position
+                section.save()
+        
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
 
 @method_decorator(csrf_exempt, name="dispatch")
 class AddSectionView(View):
@@ -80,15 +250,26 @@ class AddSectionView(View):
             # Dapatkan objek Project yang sesuai
             project = Project.objects.get(id=project_id)
 
-            # Buat Section baru
-            section = Section.objects.create(project=project, title=title)
+            # Cari nilai position terbesar pada project tersebut
+            max_position = project.sections.aggregate(max_position=models.Max('position'))['max_position']
+            print(f"Max position for project {project_id}: {max_position}")  # Debugging log
+
+            if max_position is None:
+                max_position = 0  # Jika tidak ada section, mulai dari 0
+            else:
+                max_position += 1  # Tambah 1 dari nilai position terbesar
+
+            # Buat Section baru dengan position baru
+            section = Section.objects.create(project=project, title=title, position=max_position)
 
             # Mengembalikan ID section yang baru dibuat
-            return JsonResponse({"success": True, "section_id": section.id}, status=201)
+            return JsonResponse({"success": True, "section_id": section.id, "position": section.position}, status=201)
         except Project.DoesNotExist:
             return JsonResponse({"success": False, "error": "Project not found"}, status=404)
         except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)}, status=500)  # Mengembalikan kesalahan
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+ 
+        
 @method_decorator(csrf_exempt, name="dispatch")
 class UpdateSectionTitleView(View):
     def post(self, request, section_id):
@@ -125,7 +306,7 @@ def upload_image(request, project_id):
 
             # Buat nama file yang unik
             timestamp = timezone.now().strftime("%Y%m%d%H%M%S")  # Format timestamp
-            unique_filename = f"project_{project_id}_{timestamp}{ext}"
+            unique_filename = f"{project_id}_{timestamp}{ext}"
 
             # Simpan file image dengan nama unik
             file_name = default_storage.save(f"project_images/{unique_filename}", image)
@@ -158,12 +339,23 @@ def delete_section(request, section_id):
 def delete_image(request, image_id):
     # Mencari gambar berdasarkan ID
     image = get_object_or_404(ProjectImage, id=image_id)
+
+    original_image_path = image.image.path
+    filename = os.path.basename(original_image_path)
+
+    tex_file_dir = os.path.join(settings.MEDIA_ROOT, 'tex_file')
+    symlink_images_dir = os.path.join(tex_file_dir, 'images')
+    symlink_image_path = os.path.join(symlink_images_dir, filename)
     
     # Menghapus gambar dari database
     image.delete()
     image_path = image.image.path
     if os.path.exists(image_path):
         os.remove(image_path)
+
+    if os.path.exists(symlink_image_path):
+            os.remove(symlink_image_path)
+            logger.info(f"Deleted symlink/copied image: {symlink_image_path}")
     
     # Mengembalikan respons sukses
     return JsonResponse({'status': 'success'}, status=200)
